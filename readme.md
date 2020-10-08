@@ -1,12 +1,16 @@
 # 大数据环境搭建部分
 
+### 注意：
+
+- 所有的安装包默认放在虚拟机的`/root`目录下
+- 环境搭建所需安装包 [下载链接](https://pan.baidu.com/s/1vk1wVTdVxyY5wuD9Q1XUvg), 提取码：`data`
+
 #### 1、虚拟机网络配置
 
 ```shell
 # CentOS 6
 rm -rf /etc/udev/rules.d/70-persistent-net.rules
 vim /etc/sysconfig/network-scripts/ifcfg-eth0
-service network restart
 ```
 
 ```shell
@@ -114,7 +118,7 @@ ssh-copy-id -i node1
    ```shell
    # 解压 java 安装包
    tar -zxvf jdk-8u192-linux-x64.tar.gz
-   mv jdk-8u192 /opt/jdk
+   mv jdk-8u192-linux-x64 /opt/jdk
    
    # 配置环境变量
    vim /etc/profile
@@ -140,8 +144,8 @@ ssh-copy-id -i node1
 
 ```shell
 # 解压 hadoop 安装包
-tar -zxvf hadoop-2.6.0.tar.gz
-mv hadoop-2.6.0 /opt/hadoop
+tar -zxvf hadoop-2.7.6.tar.gz
+mv hadoop-2.7.6 /opt/hadoop
 cd /opt/hadoop/etc/hadoop
 ```
 
@@ -422,7 +426,7 @@ mysql 可能会出现启动不完全的情况。`ps -aux`/`ps -ef`检查所有 m
 
 ```shell
 # 提供 mysql-connector jar包
-cp /opt/software/mysql-connector-java-5.1.39-bin.jar /opt/hive/lib/
+cp /root/mysql-connector-java-5.1.17-bin.jar /opt/hive/lib/
 
 # 替换掉 hadoop 的 jline 的版本 (高版本的似乎不自带 jline, 目前只知道 hadoop1.6 需要先删除 jline-0.9.94.jar)
 rm -rf /opt/hadoop/share/hadoop/yarn/lib/jline-0.9.94.jar
@@ -725,7 +729,9 @@ start-yarn.sh
 #### 13、Python
 
 ```shell
-# 提前安装好编译所需的环境
+# 提前安装好编译所需的环境(在 tensorflow_torch.tar.gz 内)
+tar -zxvf tensorflow_torch.tar.gz
+cd tensorflow_torch/rpm
 rpm -ivh --nodeps --force *.rpm
 ```
 
@@ -744,6 +750,7 @@ ln -s /opt/python36/bin/pip3 /usr/bin/pip3
 **升级 pip**
 
 ```shell
+cd /root/tensorflow_torch
 pip3 install pip-20.2.3-py2.py3-none-any.whl
 ```
 
@@ -757,7 +764,7 @@ pip3 install pip-20.2.3-py2.py3-none-any.whl
 # tensorflow-1.1.0rc1-cp36-cp36m-manylinux1_x86_64.whl
 # Werkzeug-0.16.0-py2.py3-none-any.whl
 # wheel-0.33.6-py2.py3-none-any.whl
-cd tensorflow
+cd /root/tensorflow_torch/tensorflow
 pip3 install *.whl
 ```
 
@@ -773,7 +780,7 @@ print(sess.run(hello))
 **安装 PyTorch**
 
 ```shell
-cd pytorch
+cd /root/tensorflow_torch/pytorch
 # 安装 future(要需要先安装，不然后面会报错)
 tar zxvf future-0.18.2.tar.gz
 cd future-0.18.2
