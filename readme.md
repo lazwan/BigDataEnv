@@ -728,21 +728,30 @@ start-yarn.sh
 
 #### 13、Python
 
+**安装编译所需的环境(在`tensorflow_torch.tar.gz`内)**
+
 ```shell
-# 提前安装好编译所需的环境(在 tensorflow_torch.tar.gz 内)
 tar -zxvf tensorflow_torch.tar.gz
 cd tensorflow_torch/rpm
 rpm -ivh --nodeps --force *.rpm
 ```
 
+**编译安装**
+
 ```shell
-# make 编译前一定要安装好依赖，不然会出问题！！！
-tar -zxvf ./Python-3.6.3.tgz
-cd ./Python-3.6.3
+tar -zxvf Python-3.6.3.tgz
+cd Python-3.6.3
 ./configure --prefix=/opt/python36
+
 make
+
+# make 结束后进行
 make install
-# 软连接到 /usr/bin
+```
+
+**创建软链接**
+
+```shell
 ln -s /opt/python36/bin/python3 /usr/bin/python3
 ln -s /opt/python36/bin/pip3 /usr/bin/pip3
 ```
