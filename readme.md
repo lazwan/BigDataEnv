@@ -728,10 +728,10 @@ start-yarn.sh
 
 #### 13、Python
 
-**安装编译所需的环境(在`tensorflow_torch.tar.gz`内)**
+**安装编译所需的环境(在`tensorflow_torch.tgz`内)**
 
 ```shell
-tar -zxvf tensorflow_torch.tar.gz
+tar -zxvf tensorflow_torch.tgz
 cd tensorflow_torch/rpm
 rpm -ivh --nodeps --force *.rpm
 ```
