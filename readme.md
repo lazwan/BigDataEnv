@@ -668,13 +668,13 @@ export PATH=$SPARK_HOME:/bin:$PATH
    export SPARK_WORKER_CORES=1
    export SPARK_WORKER_INSTANCES=1
    export SPARK_WORKER_MEMORY=1g
+   export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
    export JAVA_HOME=/opt/jdk
    ```
 
 2. **slaves(从slaves.template 复制)**
 
    ```
-   master
    node1
    node2
    ```
