@@ -17,14 +17,15 @@ vim /etc/sysconfig/network-scripts/ifcfg-eth0
 # CentOS 7 设置静态 ip
 vim /etc/sysconfig/network-scripts/ifcfg-ens33
 
-# 将 BOOTPROTO=dhcp -> BOOTPROTO=static (改)
+# 将 BOOTPROTO=dhcp -> BOOTPROTO=none (改)
 # 将 ONBOOT=no -> ONBOOT=yes (改)
 
 # 根据实际情况添加配置, 具体情况略, 以下为样例
-ipaddr=192.168.100.129
-dns1=192.168.100.2
-netmask=255.255.255.0
-gateway=192.168.100.2
+IPADDR=192.168.100.101
+PREFIX=24
+GATEWAY=192.168.100.2
+NETMASK=255.255.255.0
+DNS1=192.168.100.2
 ```
 
 **改完重启虚拟机或者重启网卡**
@@ -827,3 +828,13 @@ cp libpython3.6m.so.1.0 /usr/local/lib64/
 cp libpython3.6m.so.1.0 /usr/lib/
 cp libpython3.6m.so.1.0 /usr/lib64/
 ```
+
+**有网络情况下的安装**
+
+```
+yum install python3
+pip3 install --upgrade pip
+pip3 install tensorflow
+pip3 install torch
+```
+
