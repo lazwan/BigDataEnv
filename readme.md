@@ -674,6 +674,7 @@ export PATH=$SPARK_HOME:/bin:$PATH
 2. **slaves(从slaves.template 复制)**
 
    ```
+   master
    node1
    node2
    ```
