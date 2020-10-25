@@ -847,7 +847,7 @@ pip 默认源下载很慢所以建议修改成国内镜像源
    - 在 `~/`目录下新建 `.pip`文件夹: 
 
    ```skell
-   [root@master ~] #mkdir ~/.pip
+   mkdir ~/.pip
    ```
 
    - 在 `~/.pip`文件夹下新建 `pip.conf`写入以下内容：`vim ~/.pip/pip.conf`
