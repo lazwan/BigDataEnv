@@ -494,7 +494,7 @@ hdfs dfs -get /data/anhui.txt /usr/local/
 hdfs 报错：`appendToFile: Failed to APPEND_FILE /data/file/data1.csv for DFSClient_NONMAPREDUCE_-1657827142_1 on 192.168.1.100 because lease recovery is in progress. Try again later.`
 在`hdfs-site.xml`中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
 
-#### ~~10、zookeeper~~
+#### 10、zookeeper
 
 **配置环境变量**
 
@@ -838,3 +838,40 @@ pip3 install tensorflow
 pip3 install torch
 ```
 
+**修改 pip 源**
+
+pip 默认源下载很慢所以建议修改成国内镜像源
+
+1. 手动修改
+
+   - 在 `~/`目录下新建 `.pip`文件夹: 
+
+   ```skell
+   [root@master ~] #mkdir ~/.pip
+   ```
+
+   - 在 `~/.pip`文件夹下新建 `pip.conf`写入以下内容：`vim ~/.pip/pip.conf`
+
+   ```
+   [global]
+   index-url = http://pypi.douban.com/simple/
+   [install]
+   trusted-host = pypi.douban.com
+   ```
+
+2. 使用 `pqi` 修改
+
+   ```shell
+   pip3 install pqi
+   
+   pqi ls
+   pypi 	 https://pypi.python.org/simple/
+   tuna 	 https://pypi.tuna.tsinghua.edu.cn/simple
+   douban 	 http://pypi.douban.com/simple/
+   aliyun 	 https://mirrors.aliyun.com/pypi/simple/
+   ustc 	 https://mirrors.ustc.edu.cn/pypi/web/simple
+   
+   pqi use <name> # <name> 为以上显示源的名称，建议使用 ustc 或 douban
+   ```
+
+   
