@@ -17,14 +17,15 @@ vim /etc/sysconfig/network-scripts/ifcfg-eth0
 # CentOS 7 设置静态 ip
 vim /etc/sysconfig/network-scripts/ifcfg-ens33
 
-# 将 BOOTPROTO=dhcp -> BOOTPROTO=static (改)
+# 将 BOOTPROTO=dhcp -> BOOTPROTO=none (改)
 # 将 ONBOOT=no -> ONBOOT=yes (改)
 
 # 根据实际情况添加配置, 具体情况略, 以下为样例
-ipaddr=192.168.100.129
-dns1=192.168.100.2
-netmask=255.255.255.0
-gateway=192.168.100.2
+IPADDR=192.168.100.101
+PREFIX=24
+GATEWAY=192.168.100.2
+NETMASK=255.255.255.0
+DNS1=192.168.100.2
 ```
 
 **改完重启虚拟机或者重启网卡**
@@ -493,7 +494,7 @@ hdfs dfs -get /data/anhui.txt /usr/local/
 hdfs 报错：`appendToFile: Failed to APPEND_FILE /data/file/data1.csv for DFSClient_NONMAPREDUCE_-1657827142_1 on 192.168.1.100 because lease recovery is in progress. Try again later.`
 在`hdfs-site.xml`中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
 
-#### ~~10、zookeeper~~
+#### 10、zookeeper
 
 **配置环境变量**
 
@@ -657,7 +658,7 @@ hadoop dfsadmin -safemode leave
 
 ```shell
 export SPARK_HOME=/opt/spark
-export PATH=$SPARK_HOME:/bin:$PATH
+export PATH=$SPARK_HOME/bin:$PATH
 ```
 
 1. **sprk-env-sh(从 spark-env.sh.template 复制)**
@@ -665,9 +666,10 @@ export PATH=$SPARK_HOME:/bin:$PATH
    ```shell
    export SPARK_MASTER_IP=master
    export SPARK_MASTER_PORT=7077
-   export SPARK_WORKER_CORES=1
+   export SPARK_WORKER_CORES=1  // 根据虚拟机情况设置
    export SPARK_WORKER_INSTANCES=1
-   export SPARK_WORKER_MEMORY=1g
+   export SPARK_WORKER_MEMORY=1g // 根据虚拟机情况设置
+   export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
    export JAVA_HOME=/opt/jdk
    ```
 
@@ -826,3 +828,50 @@ cp libpython3.6m.so.1.0 /usr/local/lib64/
 cp libpython3.6m.so.1.0 /usr/lib/
 cp libpython3.6m.so.1.0 /usr/lib64/
 ```
+
+**有网络情况下的安装**
+
+```
+yum install python3
+pip3 install --upgrade pip
+pip3 install tensorflow
+pip3 install torch
+```
+
+**修改 pip 源**
+
+pip 默认源下载很慢所以建议修改成国内镜像源
+
+1. 手动修改
+
+   - 在 `~/`目录下新建 `.pip`文件夹: 
+
+   ```skell
+   [root@master ~] #mkdir ~/.pip
+   ```
+
+   - 在 `~/.pip`文件夹下新建 `pip.conf`写入以下内容：`vim ~/.pip/pip.conf`
+
+   ```
+   [global]
+   index-url = http://pypi.douban.com/simple/
+   [install]
+   trusted-host = pypi.douban.com
+   ```
+
+2. 使用 `pqi` 修改
+
+   ```shell
+   pip3 install pqi
+   
+   pqi ls
+   pypi 	 https://pypi.python.org/simple/
+   tuna 	 https://pypi.tuna.tsinghua.edu.cn/simple
+   douban 	 http://pypi.douban.com/simple/
+   aliyun 	 https://mirrors.aliyun.com/pypi/simple/
+   ustc 	 https://mirrors.ustc.edu.cn/pypi/web/simple
+   
+   pqi use <name> # <name> 为以上显示源的名称，建议使用 ustc 或 douban
+   ```
+
+   
