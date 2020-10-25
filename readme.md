@@ -658,7 +658,7 @@ hadoop dfsadmin -safemode leave
 
 ```shell
 export SPARK_HOME=/opt/spark
-export PATH=$SPARK_HOME:/bin:$PATH
+export PATH=$SPARK_HOME/bin:$PATH
 ```
 
 1. **sprk-env-sh(从 spark-env.sh.template 复制)**
@@ -666,9 +666,9 @@ export PATH=$SPARK_HOME:/bin:$PATH
    ```shell
    export SPARK_MASTER_IP=master
    export SPARK_MASTER_PORT=7077
-   export SPARK_WORKER_CORES=1
+   export SPARK_WORKER_CORES=1  // 根据虚拟机情况设置
    export SPARK_WORKER_INSTANCES=1
-   export SPARK_WORKER_MEMORY=1g
+   export SPARK_WORKER_MEMORY=1g // 根据虚拟机情况设置
    export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
    export JAVA_HOME=/opt/jdk
    ```
