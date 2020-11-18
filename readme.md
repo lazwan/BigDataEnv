@@ -661,7 +661,8 @@ export SPARK_HOME=/opt/spark
 export PATH=$SPARK_HOME/bin:$PATH
 ```
 
-1. **sprk-env-sh(从 spark-env.sh.template 复制)**
+**修改配置文件**  
+1. **`spark-env.sh`(从 `spark-env.sh.template` 复制)**
 
    ```shell
    export SPARK_MASTER_IP=master
@@ -673,7 +674,7 @@ export PATH=$SPARK_HOME/bin:$PATH
    export JAVA_HOME=/opt/jdk
    ```
 
-2. **slaves(从slaves.template 复制)**
+2. **`slaves`(从 `slaves.template` 复制)**
 
    ```
    node1
@@ -692,19 +693,11 @@ scp -r /opt/spark node2:/opt
 ```shell
 ./sbin/start-all.sh
 
-# 访问spark ui
-http://master:8080/
+# 访问 Spark UI
+http://master:8080
 ```
 
-**增加 hadoop 配置文件地址**
-
-```shell
-vim spark-env.sh
-
-export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
-```
-
-**往yarn提交任务需要增加两个配置(yarn.site.xml)**
+**往 yarn 提交任务需要增加两个配置(`/opt/hadoop/etc/hadoop/yarn-site.xml`)**
 
 ```xml
 <property>
@@ -721,11 +714,11 @@ export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
 **同步到其他节点，重启 yarn**
 
 ```shell
-scp -r /opt/hadoop/etc/hadoop/yarn-site.xml node1: `pwd`
-scp -r /opt/hadoop/etc/hadoop/yarn-site.xml node2: `pwd`
+scp -r /opt/hadoop/etc/hadoop/yarn-site.xml node1:`pwd`
+scp -r /opt/hadoop/etc/hadoop/yarn-site.xml node2:`pwd`
 
-stop-yarn.sh
-start-yarn.sh
+/opt/hadoop/sbin/stop-yarn.sh
+/opt/hadoop/sbin/start-yarn.sh
 ```
 
 #### 13、Python
