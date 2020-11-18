@@ -38,7 +38,29 @@ service network restart
 systemctl restart network.service
 ```
 
-#### 2、修改 hosts，改完拷贝到另外两台机器
+#### 2、关闭防火墙
+
+```shell
+# Centos 7
+systemctl stop firewalld.service
+systemctl disable firewalld.service
+
+# Centos 6
+service iptables stop
+chkconfig iptables off
+```
+
+#### 3、配置免密登录（在 master 上）
+
+```shell
+ssh-keygen -t rsa
+
+ssh-copy-id -i master
+ssh-copy-id -i node2
+ssh-copy-id -i node1
+```
+
+#### 4、修改 hosts，改完拷贝到另外两台机器
 
 ```shell
 vim /etc/hosts
@@ -52,19 +74,7 @@ scp /etc/hosts node1:/etc/hosts
 scp /etc/hosts node2:/etc/hosts
 ```
 
-#### 3、关闭防火墙
-
-```shell
-# Centos 7
-systemctl stop firewalld.service
-systemctl disable firewalld.service
-
-# Centos 6
-service iptables stop
-chkconfig iptables off
-```
-
-#### 4、所有环境变量汇总(`/etc/profile`)
+#### 5、所有环境变量汇总(`/etc/profile`)
 
 ````shell
 vim /etc/profile
@@ -94,16 +104,6 @@ export PATH=$HBASE_HOME/bin:$PATH
 export SPARK_HOME=/opt/spark
 export PATH=$SPARK_HOME/bin$PATH
 ````
-
-#### 5、配置免密登录（在 master 上）
-
-```shell
-ssh-keygen -t rsa
-
-ssh-copy-id -i master
-ssh-copy-id -i node2
-ssh-copy-id -i node1
-```
 
 #### 6、安装 JDK
 
@@ -847,7 +847,7 @@ pip 默认源下载很慢所以建议修改成国内镜像源
    - 在 `~/`目录下新建 `.pip`文件夹: 
 
    ```skell
-   [root@master ~] #mkdir ~/.pip
+   mkdir ~/.pip
    ```
 
    - 在 `~/.pip`文件夹下新建 `pip.conf`写入以下内容：`vim ~/.pip/pip.conf`
