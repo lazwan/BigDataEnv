@@ -75,7 +75,7 @@ ssh-copy-id -i slave2
 ssh-copy-id -i slave1
 ```
 
-#### 5、所有环境变量汇总(`/etc/profile`)
+#### 5、所有环境变量汇总（`/etc/profile`）
 
 ````shell
 vim /etc/profile
