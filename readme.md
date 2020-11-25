@@ -38,22 +38,7 @@ service network restart
 systemctl restart network.service
 ```
 
-#### 2、修改 hosts，改完拷贝到另外两台机器
-
-```shell
-vim /etc/hosts
-# 添加以下内容
-master_ip	master
-node1_ip	node1
-node2_ip	node2
-
-# 主机名中**一定一定一定**不能有下划线、连接符！！
-# 届时统一使用 azy01slave1, azy01sla 类的名字!
-scp /etc/hosts node1:/etc/hosts
-scp /etc/hosts node2:/etc/hosts
-```
-
-#### 3、关闭防火墙
+#### 2、关闭防火墙
 
 ```shell
 # Centos 7
@@ -65,7 +50,32 @@ service iptables stop
 chkconfig iptables off
 ```
 
-#### 4、所有环境变量汇总（`/etc/profile`）
+#### 3、修改 hosts，改完拷贝到另外两台机器
+
+```shell
+vim /etc/hosts
+# 添加以下内容
+master_ip	master
+slave1_ip	slave1
+slave2_ip	slave2
+
+# 主机名中**一定一定一定**不能有下划线、连接符！！
+# 届时统一使用 azy01slave1, azy01sla 类的名字!
+scp /etc/hosts node1:/etc/hosts
+scp /etc/hosts node2:/etc/hosts
+```
+
+#### 4、配置免密登录（在 master 上）
+
+```shell
+ssh-keygen -t rsa
+
+ssh-copy-id -i master
+ssh-copy-id -i slave2
+ssh-copy-id -i slave1
+```
+
+#### 5、所有环境变量汇总(`/etc/profile`)
 
 ````shell
 vim /etc/profile
@@ -95,16 +105,6 @@ export PATH=$HBASE_HOME/bin:$PATH
 export SPARK_HOME=/opt/spark
 export PATH=$SPARK_HOME/bin$PATH
 ````
-
-#### 5、配置免密登录（在 master 上）
-
-```shell
-ssh-keygen -t rsa
-
-ssh-copy-id -i master
-ssh-copy-id -i node2
-ssh-copy-id -i node1
-```
 
 #### 6、安装 JDK
 
@@ -138,8 +138,8 @@ ssh-copy-id -i node1
 3. 复制到另外两台机器上
 
    ```shell
-   scp /opt/jdk node1:/opt
-   scp /opt/jdk node2:/opt
+   scp /opt/jdk slave1:/opt
+   scp /opt/jdk slave2:/opt
    ```
 
 #### 7、hadoop 配置
@@ -154,8 +154,8 @@ cd /opt/hadoop/etc/hadoop
 1. slaves
 
    ```
-   node1
-   node2
+   slave1
+   slave2
    ```
 
 2. hadoop-env.sh
@@ -438,8 +438,8 @@ cp /opt/hive/lib/jline-2.12.jar /opt/hadoop/share/hadoop/yarn/lib/
 **拷贝配置文件到所有机器上**
 
 ```shell
-scp -r /opt/hive node1:/opt
-scp -r /opt/hive node2:/opt
+scp -r /opt/hive slave1:/opt
+scp -r /opt/hive slave2:/opt
 ```
 
 **初始化元数据：**
@@ -513,15 +513,15 @@ export PATH=$ZOOKEEPER_HOME/bin:$PATH
 ```cfg
 dataDir=/opt/zookeeper/data
 server.0=master:2888:3888
-server.1=node1:2888:3888
-server.2=node2:2888:3888
+server.1=slave1:2888:3888
+server.2=slave2:2888:3888
 ```
 
 **同步到其它节点**
 
 ```shell
-scp -r /opt/zookeeper node1:/opt
-scp -r /opt/zookeeper node2:/opt
+scp -r /opt/zookeeper slave1:/opt
+scp -r /opt/zookeeper slave2:/opt
 ```
 
 **创建 `/opt/zookeepe/data` 目录(每台机器都需要配置)**
@@ -533,8 +533,8 @@ mkdir /opt/zookeeper/data
 vim myid
 # 分别加上0, 1, 2
 # master -> 0
-# node1  -> 1
-# node2  -> 2
+# slave1  -> 1
+# slave2  -> 2
 ```
 
 **启动 zookeeper**
@@ -589,7 +589,7 @@ delete /test/test01   删除不存在子节点的节点
    
    <property> 
        <name>hbase.zookeeper.quorum</name>
-       <value>master,node1,node2</value>
+       <value>master,slave1,slave2</value>
    </property>
    
    # 装了 zookeeper 则不需要此配置
@@ -602,8 +602,8 @@ delete /test/test01   删除不存在子节点的节点
 3. regionservers
 
    ```
-   node1
-   node2
+   slave1
+   slave2
    ```
 
 **拷贝配置文件到所有机器上**
@@ -622,7 +622,7 @@ scp -r /opt/hbase node2:/opt
 hbase shell
 ```
 
-在master、node2、node3中的任意一台机器使用`./bin/hbase shell `进入hbase自带的shell环境，然后使用命令`version`等，进行查看hbase信息及建立表等操作
+在master、slave2、slave3中的任意一台机器使用`./bin/hbase shell `进入hbase自带的shell环境，然后使用命令`version`等，进行查看hbase信息及建立表等操作
 
 **关闭安全模式**
 
@@ -679,15 +679,15 @@ export PATH=$SPARK_HOME/bin:$PATH
 2. **`slaves`(从 `slaves.template` 复制)**
 
    ```
-   node1
-   node2
+   slave1
+   slave2
    ```
 
 **拷贝配置文件到所有机器上**
 
 ```shell
-scp -r /opt/spark node1:/opt
-scp -r /opt/spark node2:/opt
+scp -r /opt/spark slave1:/opt
+scp -r /opt/spark slave2:/opt
 ```
 
 **启动 Spark**
@@ -716,8 +716,8 @@ http://master:8080
 **同步到其他节点，重启 yarn**
 
 ```shell
-scp -r /opt/hadoop/etc/hadoop/yarn-site.xml node1:`pwd`
-scp -r /opt/hadoop/etc/hadoop/yarn-site.xml node2:`pwd`
+scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave1:`pwd`
+scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave2:`pwd`
 
 /opt/hadoop/sbin/stop-yarn.sh
 /opt/hadoop/sbin/start-yarn.sh
