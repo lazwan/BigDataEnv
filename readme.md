@@ -138,8 +138,8 @@ export PATH=$SPARK_HOME/bin$PATH
 3. 复制到另外两台机器上
 
    ```shell
-   scp /opt/jdk slave1:/opt
-   scp /opt/jdk slave2:/opt
+   scp -r /opt/jdk slave1:/opt
+   scp -r /opt/jdk slave2:/opt
    ```
 
 #### 7、hadoop 配置
@@ -249,8 +249,8 @@ cd /opt/hadoop/etc/hadoop
 **把 hadoop 拷到其他机器上**
 
 ```shell
-scp -r /opt/hadoop node1:/opt/
-scp -r /opt/hadoop node2:/opt/
+scp -r /opt/hadoop slave1:/opt/
+scp -r /opt/hadoop slave2:/opt/
 ```
 
 **在 master 上初始化 hadoop 集群**
