@@ -194,7 +194,7 @@ ssh-copy-id -i slave1
 4. 复制环境变量到另外两台机器上((请**逐条在命令行中运行**)
 
    ```shell
-scp /etc/profile slave1:/etc
+   scp /etc/profile slave1:/etc
    scp /etc/profile slave2:/etc
    ```
    
