@@ -10,13 +10,13 @@
 
 这里我们默认使用的是 `VMware 16` ，`VMware 15`也可以，`CentosOS`版本选择的是 `CentOS 7`
 
-具体安装请看👉 [虚拟机安装CentOS 7](./虚拟机安装CentOS 7.md)
+具体安装请看👉 [虚拟机安装CentOS 7](https://gitee.com/lazywa/BigData/blob/master/虚拟机安装CentOS 7.md)
 
 #### 2、克隆虚拟机、连接 `Xshell`
 
 这里我们约定三台虚拟机名称默认为 `master`、`slave1`、`slave2` (比赛中会有不同的要求)
 
-具体安装请看👉 [虚拟机克隆、连接Xshell](.\虚拟机克隆、连接Xshell.md)
+具体安装请看👉[虚拟机克隆、连接Xshell](https://gitee.com/lazywa/BigData/blob/master/虚拟机克隆、连接Xshell.md)
 
 #### 3、关闭防火墙(三台虚拟机都要操作)
 
