@@ -2,321 +2,399 @@
 
 ### 注意：
 
-- 所有的安装包默认放在虚拟机的`/root`目录下
+- 环境搭建所需要的安装包需要提前使用 `xftp`上传，本文档默认放在虚拟机的`/root`目录下
 - 环境搭建所需安装包 [下载链接](https://pan.baidu.com/s/1vk1wVTdVxyY5wuD9Q1XUvg), 提取码：`data`
+- 请学会使用  `Tab` 键进行补全文件路径
 
-#### 1、虚拟机网络配置
+#### 1、虚拟机安装
 
-```shell
-# CentOS 6
-rm -rf /etc/udev/rules.d/70-persistent-net.rules
-vim /etc/sysconfig/network-scripts/ifcfg-eth0 
-```
+这里我们默认使用的是 `VMware 16` ，`VMware 15`也可以，`CentosOS`版本选择的是 `CentOS 7`
 
-```shell
-# CentOS 7 设置静态 ip
-vim /etc/sysconfig/network-scripts/ifcfg-ens33
+具体安装请看👉 [虚拟机安装CentOS 7](./虚拟机安装CentOS 7.md)
 
-# 将 BOOTPROTO=dhcp -> BOOTPROTO=none (改)
-# 将 ONBOOT=no -> ONBOOT=yes (改)
+#### 2、克隆虚拟机、连接 `Xshell`
 
-# 根据实际情况添加配置, 具体情况略, 以下为样例
-IPADDR=192.168.100.101
-PREFIX=24
-GATEWAY=192.168.100.2
-NETMASK=255.255.255.0
-DNS1=192.168.100.2
-```
+这里我们约定三台虚拟机名称默认为 `master`、`slave1`、`slave2` (比赛中会有不同的要求)
 
-**改完重启虚拟机或者重启网卡**
+具体安装请看👉 [虚拟机克隆、连接Xshell](.\虚拟机克隆、连接Xshell.md)
 
-```shell
-# CentOS 6
-service network restart
+#### 3、关闭防火墙(三台虚拟机都要操作)
 
-# CentOS 7
-systemctl restart network.service
-```
+请根基你的系统版本选择对应的命令
 
-#### 2、关闭防火墙
+- Centos 7 命令 (两条命令分别执行)
 
-```shell
-# Centos 7
-systemctl stop firewalld.service
-systemctl disable firewalld.service
+  ```shell
+  systemctl stop firewalld.service
+  systemctl disable firewalld.service
+  ```
 
-# Centos 6
-service iptables stop
-chkconfig iptables off
-```
+- Centos 6 命令 (两条命令分别执行)
 
-#### 3、修改 hosts，改完拷贝到另外两台机器
+  ```shell
+  service iptables stop
+  chkconfig iptables off
+  ```
+
+#### 4、修改 hosts，改完拷贝到另外两台机器
+
+命令：
 
 ```shell
 vim /etc/hosts
-# 添加以下内容
+```
+
+添加以下内容:
+
+**请注意注意一下几点：**
+
+- 主机名中**一定一定一定**不能有下划线、连接符！！！
+- 请不要复制以下内容直接用，需要讲`master_ip`改成对应主机的 IP 地址(具体请看最后的示例)
+
+- 比赛时根据官方要求统一使用 `azy01slave1`, `azy01sla` 类的名字
+
+```shell
 master_ip	master
 slave1_ip	slave1
 slave2_ip	slave2
-
-# 主机名中**一定一定一定**不能有下划线、连接符！！
-# 届时统一使用 azy01slave1, azy01sla 类的名字!
-scp /etc/hosts node1:/etc/hosts
-scp /etc/hosts node2:/etc/hosts
 ```
 
-#### 4、配置免密登录（在 master 上）
+示例：
+
+![image-20201125235322838](image/image-20201125235322838.png)
+
+拷贝 `hosts` 到另外两台虚拟机
+
+命令(请**逐条在命令行中运行**)：
+
+```shell
+scp /etc/hosts slave1:/etc/hosts
+scp /etc/hosts slave2:/etc/hosts
+```
+
+#### 5、配置免密登录（在 master 上）
+
+生成 SSH 公钥(需要**按多次回车**，直到出现一个“框”)
 
 ```shell
 ssh-keygen -t rsa
+```
 
+配置三台主机的免密登录(请**逐条在命令行中运行**)
+
+```shell
 ssh-copy-id -i master
 ssh-copy-id -i slave2
 ssh-copy-id -i slave1
 ```
 
-#### 5、所有环境变量汇总（`/etc/profile`）
-
-````shell
-vim /etc/profile
-# 添加以下内容
-
-# JAVA_HOME
-export JAVA_HOME=/opt/jdk
-export PATH=$JAVA_HOME/bin:$PATH
-
-# HADOOP_HOME
-export HADOOP_HOME=/opt/hadoop
-export PATH=$HADOOP_HOME/bin:$PATH
-
-# MYSQL_HOME
-export MYSQL_HOME=/opt/mysql
-export PATH=$MYSQL_HOME/bin:$PATH
-
-# HIVE_HOME
-export HIVE_HOME=/opt/hive
-export PATH=$HIVE_HOME/bin$PATH
-
-# HBASE_HOME
-export HBASE_HOME=/opt/hbase
-export PATH=$HBASE_HOME/bin:$PATH
-
-# SPARK_HOME
-export SPARK_HOME=/opt/spark
-export PATH=$SPARK_HOME/bin$PATH
-````
-
 #### 6、安装 JDK
 
-1. 卸载系统自带的 JDK（防止自带版本造成的冲突）
+1. 解压 `jdk` 安装包
 
    ```shell
-   rpm -qa | grep jdk
-   rpm -e --nodeps {file-name}
+   tar -zxvf jdk-8u192-linux-x64.tar.gz
    ```
 
-2. 安装 JDK 1.8
+2. 将解压出来的文件夹 `jdk1.8.0_192` 移动到 `/opt` 目录下，并修改文件夹名称为 `jdk`
 
    ```shell
-   # 解压 java 安装包
-   tar -zxvf jdk-8u192-linux-x64.tar.gz
-   mv jdk-8u192-linux-x64 /opt/jdk
-   
-   # 配置环境变量
+   mv jdk1.8.0_192 /opt/jdk
+   ```
+
+3. 配置 `jdk` 环境变量
+
+   命令：
+
+   ```shell
    vim /etc/profile
+   ```
+
+   在注释的最后一行添加以下内容 (如下图)
+
+   ```shell
    export JAVA_HOME=/opt/jdk
    export PATH=$JAVA_HOME/bin:$PATH
-   
-   # 在每次生效profile之前，备份一遍PATH，防止PATH变量受损
+   ```
+
+   ![image-20201125235224054](image/image-20201125235224054.png)
+
+4. 显示当前环境变量(可选， 作用为备份 PATH，防止 PATH 变量受损)
+
+   ```shell
    echo $PATH
-   # 使用export PATH=[原配置]可以还原
-   export PATH=xxx
-   
+   ```
+
+   此时会输出一个类似以下的内容
+
+   ```shell
+   /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+   ```
+
+   如果环境变量配置错了，可以通过这个进行恢复
+
+   恢复命令：
+
+   ```shell
+   export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+   ```
+
+5. 使环境变量生效
+
+   命令：
+
+   ```shell
    source /etc/profile
    ```
 
-3. 复制到另外两台机器上
+   若 `source`后 `ls`、`cd`等指令没有了，可以通过上一步进行恢复，然后重新修改 `profile`文件
+
+6. 复制环境变量到另外两台机器上((请**逐条在命令行中运行**)
+
+   ```shell
+   scp /etc/profile slave1:/etc
+   scp /etc/profile slave2:/etc
+   ```
+   
+7. 复制 `jdk` 到另外两台机器上((请**逐条在命令行中运行**)
 
    ```shell
    scp -r /opt/jdk slave1:/opt
    scp -r /opt/jdk slave2:/opt
    ```
 
-#### 7、hadoop 配置
+#### 7、`hadoop` 配置
 
-```shell
-# 解压 hadoop 安装包
-tar -zxvf hadoop-2.7.6.tar.gz
-mv hadoop-2.7.6 /opt/hadoop
-cd /opt/hadoop/etc/hadoop
-```
+1. 解压 `hadoop` 安装包
 
-1. slaves
-
-   ```
-   slave1
-   slave2
+   ```shell
+   tar -zxvf hadoop-2.7.6.tar.gz
    ```
 
-2. hadoop-env.sh
+2. 将解压出来的文件夹 ` hadoop-2.7.6.` 移动到 `/opt` 目录下，并修改文件夹名称为 `jdk`
 
-   ```sh
-   export JAVA_HOME=/opt/jdk
+   ```shell
+   mv hadoop-2.7.6 /opt/hadoop
    ```
 
-3. core-site.xml
+3. 配置`hadoop`环境变量
 
-   ```xml
-   <property>
-       <name>fs.defaultFS</name>
-       <value>hdfs://master(主机名或ip):9000</value>
-   </property>
-   
-   <property>
-       <name>hadoop.tmp.dir</name>
-       <value>/opt/hadoop/tmp</value>
-   </property>
-   
-   // 可不加
-   <property>
-       <name>fs.trash.interval</name>
-       <value>1440</value>
-   </property>
+   命令：`vim /etc/profile` (在刚刚配置的 `jdk` 环境变量后添加即可)
+
+   ```shell
+   export HADOOP_HOME=/opt/hadoop
+   export PATH=$HADOOP_HOME/bin:$PATH
+   ```
+   使环境变量生效
+
+   ```shell
+   source /etc/profile
    ```
 
-4. hdfs-site.xml
+4. 复制环境变量到另外两台机器上((请**逐条在命令行中运行**)
 
-   ```xml
-   <property>
-       <name>dfs.replication</name>
-       <value>1</value>
-   </property>
+   ```shell
+scp /etc/profile slave1:/etc
+   scp /etc/profile slave2:/etc
+   ```
    
-   // 可不加
-   <property>
-       <name>dfs.permissions</name>
-       <value>false</value>
-   </property>
+5. 修改 `hadoop` 的配置文件
+
+   1. 进入 `hadoop` 配置文件的文件夹
+
+      ```shell
+      cd /opt/hadoop/etc/hadoop
+      ```
+
+   2. 修改 `slaves `
+
+      命令：
+
+      ```shell
+      vim slaves
+      ```
+
+      删除里面的 `localhost`，添加以下内容
+
+      ```
+      slave1
+      slave2
+      ```
+
+   3. 修改 `hadoop-env.sh`
+
+      命令：
+
+      ```shell
+      vim hadoop-env.sh
+      ```
+
+      将 `JAVA_HOME` 修改成
+
+      ```shell
+      export JAVA_HOME=/opt/jdk
+      ```
+
+      ![image-20201126000041086](image/image-20201126000041086.png)
+
+   4. 需改 `core-site.xml`
+
+      命令：
+
+      ```shell
+      vim core-site.xml
+      ```
+
+      添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+
+      ```xml
+      <property>
+          <name>fs.defaultFS</name>
+          <value>hdfs://master:9000</value>
+      </property>
+      
+      <property>
+          <name>hadoop.tmp.dir</name>
+          <value>/opt/hadoop/tmp</value>
+      </property>
+      ```
+
+      ![image-20201126000325569](image/image-20201126000325569.png)
+
+   5. 修改 `hdfs-site.xml`
+
+      命令：
+
+      ```shell
+      vim hdfs-site.xml
+      ```
+
+      添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+
+      ```xml
+      <property>
+          <name>dfs.replication</name>
+          <value>1</value>
+      </property>
+      ```
+
+   6. 修改 `mapred-site.xml`
+
+      - 从 `mapred-site.xml.template`复制出 `mapred-site.xml`
+
+        命令：
+
+       ```shell
+       cp mapred-site.xml.template mapred-site.xml
+       ```
+
+       - 用 `vim ` 编辑
+
+         命令：
+
+         ```
+         vim mapred-site.xml
+         ```
+
+         添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+
+         ```xml
+         <property>
+             <name>mapreduce.framework.name</name>
+             <value>yarn</value>
+         </property>
+         ```
+
+   7. 修改 `yarn-site.xml`
+
+       命令：
+
+       ```shell
+       vim yarn-site.xml
+       ```
+
+       添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+
+       ```xml
+       <property>
+           <name>yarn.resourcemanager.hostname</name>
+           <value>master</value>
+       </property>
+
+       <property>
+           <name>yarn.nodemanager.aux-services</name>
+           <value>mapreduce_shuffle</value>
+       </property>
+       ```
+
+6. 把 `hadoop` 拷到其他机器上(请**逐条在命令行中运行**)
+
+    ```shell
+    scp -r /opt/hadoop slave1:/opt/
+    scp -r /opt/hadoop slave2:/opt/
+    ```
+
+7. 在 master 上初始化 `hadoop` 集群
+
+    ```shell
+    hadoop namenode -format
+    ```
+
+8. 启动节点
+
+   - 进入 `hadoop` 的 `sbin` 文件夹
+
+     ```shell
+     cd /opt/hadoop/sbin
+     ```
+
+   - 启动 `hadoop`
+
+     ```shell
+     ./start-all.sh
+     ```
+
+9. 使用 `jps` 命令查看进程
+
+   ```shell
+   jps
    ```
 
-5. mapred-site.xml
+   若 `master` 显示 
 
-   ```xml
-   <property>
-       <name>mapreduce.framework.name</name>
-       <value>yarn</value>
-   </property>
-   
-   // 可不加
-   <property>
-       <name>mapreduce.jobhistory.address</name>
-       <value>master:10020</value>
-   </property>
-   
-   // 可不加
-   <property>
-       <name> mapreduce.jobhistory.webapp.address</name>
-       <value>master:19888</value>
-   </property>
+   ```shell
+   Namenode
+   Resourcemanager
+   SecondaryNameNode
+   Jps
    ```
 
-6. yarn-site.xml
+   `slave1`、`slave2`显示：
 
-   ```xml
-   <property>
-       <name>yarn.resourcemanager.hostname</name>
-       <value>master</value>
-   </property>
-   
-   <property>
-       <name>yarn.nodemanager.aux-services</name>
-       <value>mapreduce_shuffle</value>
-   </property>
-   
-   // 可不加
-   <property>
-       <name>yarn.log-aggregation-enable</name>
-       <value>true</value>
-   </property>
-   
-   // 可不加
-   <property>
-       <name>yarn.log-aggregation.retain-seconds</name>
-       <value>604800</value>
-   </property>
+   ```shell
+   Datanode
+   Nodemanager
+   Jps
    ```
 
-**把 hadoop 拷到其他机器上**
-
-```shell
-scp -r /opt/hadoop slave1:/opt/
-scp -r /opt/hadoop slave2:/opt/
-```
-
-**在 master 上初始化 hadoop 集群**
-
-```shell
-hadoop namenode -format
-```
-
-**启动节点**
-
-```shell
-cd /opt/hadoop/sbin
-
-./start-dfs.sh
-./start-yarn.sh
-
-# 或者
-./start-all.sh
-
-# jps 查看进程
-jps
-```
-
-主节点: 
-
-1. Namenode
-
-2. Resourcemanager (yarn 的, 出问题了查 yarn-site.xml)
-
-3. SecondaryNameNode
-
-子节点: 
-
-1. Datanode
-
-2. Nodemanager
-
-<p style="color:grey">如果第一次启动失败了，请重新检查配置文件或者哪里步骤少了再次重启的时候:</p>
-
-```shell
-# 需要手动将每个节点的tmp目录删除:
-rm -rf /opt/hadoop/tmp
-
-# 然后执行将namenode格式化
-# 在主节点执行命令
-./bin/hdfs namenode -format
-```
+   则安装成功，否则安装失败，请检查上述步骤或者配置文件是否出错
 
 #### 8、MySQL
 
-1. 先卸载冲突源
+1. 因为 `CentOS 7` 默认安装了 `mariadb-libs` 会导致安装不上 `MySQL` 所以先卸载冲突源
 
     ```shell
-    rpm -qa | grep mysql
-    rpm -qa | grep mariadb(CentOS 7 注意)
-    rpm -e --nodeps {file-name}
+    rpm -e --nodeps mariadb-libs
     ```
-
-2. 使用 `rpm` 包安装
+    
+2. 使用 `rpm` 包安装(先安装 `MySQL-client` 再安装 `MySQL-server`，一条条执行)
 
     ```shell
     rpm -ivh MySQL-client-5.1.73-1.glibc23.x86_64.rpm
     rpm -ivh MySQL-server-5.1.73-1.glibc23.x86_64.rpm
     ```
 
-3. 启动 mysql 服务(安装好 `server` 后一般会自启动)
+3. 启动 `mysql` 服务(安装好 `server` 后一般会自启动，不需要手动启动，可以省略)
 
     ```shell
     service mysql start
@@ -328,47 +406,56 @@ rm -rf /opt/hadoop/tmp
     chkconfig mysql on
     ```
 
-5. 初始化配置`mysql`服务
+5. 初始化配置 `mysql` 服务
 
     ```shell
     mysql_secure_installation
     ```
 
-6. 报错解决方法:
+    - `Enter current password for root (enter for none):` ：直接按回车
 
-    ```shell
-    ps aux | grep mysql
-    
-    # kill pid
-     kill -9 pid1 pid2 …
-    ```
+    - `Set root password? [Y/n]`：输入 `Y`
+    - `New password:`： 输入 `123456`
+    - `Re-enter new password:`：再输入 `123456`
+    - 后面全部回车即可
 
-4. 登录 MySQL
+6. 登录 MySQL(密码是：`123456`)
 
     ```shell
     mysql -uroot -p
-    # password:123456
     ```
 
-5. 设置用户权限
+7. 设置用户权限(请**逐条在 SQL 命令行中运行**)
 
     ```sql
     use mysql;
     update user set host='%' where user = 'root';
     flush privileges;
-    
-    // 建 hive 表
-    create database hive default charset utf8;
-    
-    show databases; // 确保有hive表
+    ```
+
+9. 建 `hive` 表
+
+   ```sql
+   create database hive default charset utf8;
+   ```
+
+10. 检查表是否创建成功
+
+    ```sql
+    show databases;
+    ```
+
+11. 退出 `MySQL`
+
+    ```
     exit;
     ```
 
-**MySQL 配置的疑难解答**
+12. `MySQL` 配置的疑难解答
 
-检查 `service mysql status`，如果在非启动状态有锁住，直接删去锁文件（status 上会指定路径）。
+- 检查 `service mysql status`，如果在非启动状态有锁住，直接删去锁文件（`status` 上会指定路径）。
 
-mysql 可能会出现启动不完全的情况。`ps -aux`/`ps -ef` 检查所有 mysql 服务的进程号，`kill -9` 杀死 mysql 的所有进程重新启动。
+- `mysql` 可能会出现启动不完全的情况。`ps -aux | ps -ef` 检查所有 `mysql` 服务的进程号，`kill -9` 杀死 `mysql` 的所有进程重新启动。
 
 #### 9、hive 配置文件
 
