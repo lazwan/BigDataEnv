@@ -10,7 +10,7 @@
 ```shell
 # CentOS 6
 rm -rf /etc/udev/rules.d/70-persistent-net.rules
-vim /etc/sysconfig/network-scripts/ifcfg-eth0
+vim /etc/sysconfig/network-scripts/ifcfg-eth0 
 ```
 
 ```shell
@@ -47,7 +47,8 @@ master_ip	master
 node1_ip	node1
 node2_ip	node2
 
-# 主机名中一定一定一定不能有下划线、连接符！！届时统一使用azy01slave1, azy01sla类的名字!
+# 主机名中**一定一定一定**不能有下划线、连接符！！
+# 届时统一使用 azy01slave1, azy01sla 类的名字!
 scp /etc/hosts node1:/etc/hosts
 scp /etc/hosts node2:/etc/hosts
 ```
@@ -64,7 +65,7 @@ service iptables stop
 chkconfig iptables off
 ```
 
-#### 4、所有环境变量汇总(`/etc/profile`)
+#### 4、所有环境变量汇总（`/etc/profile`）
 
 ````shell
 vim /etc/profile
@@ -114,7 +115,7 @@ ssh-copy-id -i node1
    rpm -e --nodeps {file-name}
    ```
 
-2. 安装JDK1.8
+2. 安装 JDK 1.8
 
    ```shell
    # 解压 java 安装包
@@ -248,8 +249,8 @@ cd /opt/hadoop/etc/hadoop
 **把 hadoop 拷到其他机器上**
 
 ```shell
-scp -r /opt/hadoop  node1:/opt/
-scp -r /opt/hadoop  node2:/opt/
+scp -r /opt/hadoop node1:/opt/
+scp -r /opt/hadoop node2:/opt/
 ```
 
 **在 master 上初始化 hadoop 集群**
@@ -287,7 +288,7 @@ jps
 
 2. Nodemanager
 
-**如果第一次启动失败了，请重新检查配置文件或者哪里步骤少了再次重启的时候:**
+<p style="color:grey">如果第一次启动失败了，请重新检查配置文件或者哪里步骤少了再次重启的时候:</p>
 
 ```shell
 # 需要手动将每个节点的tmp目录删除:
@@ -315,7 +316,7 @@ rm -rf /opt/hadoop/tmp
     rpm -ivh MySQL-server-5.1.73-1.glibc23.x86_64.rpm
     ```
 
-3. 启动 mysql 服务(安装好 `server `后一般会自启动)
+3. 启动 mysql 服务(安装好 `server` 后一般会自启动)
 
     ```shell
     service mysql start
@@ -365,13 +366,13 @@ rm -rf /opt/hadoop/tmp
 
 **MySQL 配置的疑难解答**
 
-检查`service mysql status`，如果在非启动状态有锁住，直接删去锁文件（status上会指定路径）。
+检查 `service mysql status`，如果在非启动状态有锁住，直接删去锁文件（status 上会指定路径）。
 
-mysql 可能会出现启动不完全的情况。`ps -aux`/`ps -ef`检查所有 mysql 服务的进程号，`kill -9`杀死 mysql 的所有进程重新启动。
+mysql 可能会出现启动不完全的情况。`ps -aux`/`ps -ef` 检查所有 mysql 服务的进程号，`kill -9` 杀死 mysql 的所有进程重新启动。
 
 #### 9、hive 配置文件
 
-1. **hive-env.sh**(hive-env.sh.template -> hive-env.sh)
+1. `hive-env.sh`（`hive-env.sh.template` -> `hive-env.sh`）
 
    ```sh
    HADOOP_HOME=/opt/hadoop
@@ -379,16 +380,16 @@ mysql 可能会出现启动不完全的情况。`ps -aux`/`ps -ef`检查所有 m
    HIVE_HOME=/opt/hive
    ```
 
-2. **hive-site.xml**(从 hive-default.xml.template 拷贝）
+2. `hive-site.xml`（从 `hive-default.xml.template` 拷贝）
 
-   ```.vimrc
-   " vim 配置方便查找(选择配置) 
+   ```
+   " vim 配置方便查找（选择配置）
    set ignorecase " 自动跳到第一个匹配的结果
    set incsearch  " 搜索时忽略大小写
    ```
 
    ```xml
-   # vim使用`/`加关键字搜索，n切换到下一个搜索项，N切换到上一个搜索项
+   <!-- vim使用`/`加关键字搜索，n切换到下一个搜索项，N切换到上一个搜索项 -->
    <property>
       <name>javax.jdo.option.ConnectionURL </name> 
       <value>jdbc:mysql://主机ip(不要使用hosts):3306/hive?useSSL=false</value> 
@@ -451,19 +452,19 @@ schematool -dbType mysql -initSchema
 
 ```sql
 show databases;
-set hive.cli.print.current.db=true
+set hive.cli.print.current.db=true;
 exit;
 ```
 
 **hadoop 退出 safe mode**
 
-```
+```bash
 hadoop dfsadmin -safemode leave
 ```
 
 **hdfs-site.xml的一些配置**
 
-```xml
+```
 设置dfs权限打开 				truedfs.permissions
 设置HDFS数据块的备份数		  dfs.replication 
 设置数据块写入的最多重试次数 	   dfs.client.block.write.retries
@@ -490,9 +491,11 @@ hdfs dfs -put /usr/local/testdata/anhui.txt /data/
 hdfs dfs -get /data/anhui.txt /usr/local/
 ```
 
-**hdfs 传输问题优先考虑防火墙的问题，优先先尝试关闭防火墙(但实际比赛环境好像没有防火墙)**
-hdfs 报错：`appendToFile: Failed to APPEND_FILE /data/file/data1.csv for DFSClient_NONMAPREDUCE_-1657827142_1 on 192.168.1.100 because lease recovery is in progress. Try again later.`
-在`hdfs-site.xml`中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
+<p style="color:grey">HDFS 传输问题优先考虑防火墙的问题，优先先尝试关闭防火墙（但实际比赛环境好像没有防火墙）</p>
+
+HDFS 报错：  
+`appendToFile: Failed to APPEND_FILE /data/file/data1.csv for DFSClient_NONMAPREDUCE_-1657827142_1 on 192.168.1.100 because lease recovery is in progress. Try again later.`
+在 `hdfs-site.xml` 中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
 
 #### 10、zookeeper
 
@@ -505,7 +508,7 @@ export PATH=$ZOOKEEPER_HOME/bin:$PATH
 
 **修改配置文件**
 
-zoo.cfg(从 zoo_sample.cfg 复制)
+`zoo.cfg`（从 `zoo_sample.cfg` 复制）
 
 ```cfg
 dataDir=/opt/zookeeper/data
@@ -521,7 +524,7 @@ scp -r /opt/zookeeper node1:/opt
 scp -r /opt/zookeeper node2:/opt
 ```
 
-**创建`/opt/zookeepe/data`目录(每台机器都需要配置)**
+**创建 `/opt/zookeepe/data` 目录(每台机器都需要配置)**
 
 ```shell
 mkdir /opt/zookeeper/data
@@ -555,7 +558,6 @@ get /test             获取指定节点的值
 set /test cb          设置已存在节点的值
 rmr /test             递归删除节点
 delete /test/test01   删除不存在子节点的节点
-
 ```
 
 #### 11、hbase 配置文件
@@ -606,7 +608,7 @@ delete /test/test01   删除不存在子节点的节点
 
 **拷贝配置文件到所有机器上**
 
-```
+```shell
 scp -r /opt/hbase node1:/opt
 scp -r /opt/hbase node2:/opt
 ```
