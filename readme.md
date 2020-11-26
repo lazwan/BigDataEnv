@@ -10,7 +10,7 @@
 
 这里我们默认使用的是 `VMware 16` ，`VMware 15`也可以，`CentosOS`版本选择的是 `CentOS 7`
 
-具体安装请看👉 [虚拟机安装CentOS 7](https://gitee.com/lazywa/BigData/blob/master/虚拟机安装CentOS7.md))
+具体安装请看👉 [虚拟机安装CentOS 7](https://gitee.com/lazywa/BigData/blob/master/虚拟机安装CentOS7.md)
 
 #### 2、克隆虚拟机、连接 `Xshell`
 
@@ -46,7 +46,7 @@ vim /etc/hosts
 
 添加以下内容:
 
-**请注意注意一下几点：**
+**请注意注意以下几点：**
 
 - 主机名中**一定一定一定**不能有下划线、连接符！！！
 - 请不要复制以下内容直接用，需要讲`master_ip`改成对应主机的 IP 地址(具体请看最后的示例)
@@ -80,7 +80,7 @@ scp /etc/hosts slave2:/etc/hosts
 ssh-keygen -t rsa
 ```
 
-配置三台主机的免密登录(请**逐条在命令行中运行**)
+配置三台主机的免密登录(请**逐条在命令行中运行**，后面的主机名称根据大家在 `hosts` 里的配置填写)
 
 ```shell
 ssh-copy-id -i master
@@ -97,6 +97,8 @@ ssh-copy-id -i slave1
    ```
 
 2. 将解压出来的文件夹 `jdk1.8.0_192` 移动到 `/opt` 目录下，并修改文件夹名称为 `jdk`
+
+   可以先使用 `ls` 命令查看解压出来的文件夹名称，可能与文档有差异，请按自己解压出来的**文件夹名称**操作
 
    ```shell
    mv jdk1.8.0_192 /opt/jdk
@@ -119,7 +121,7 @@ ssh-copy-id -i slave1
 
    ![image-20201125235224054](image/image-20201125235224054.png)
 
-4. 显示当前环境变量(可选， 作用为备份 PATH，防止 PATH 变量受损)
+4. 显示当前环境变量(可选，作用为备份 PATH，防止 PATH 变量受损，无法恢复)
 
    ```shell
    echo $PATH
@@ -155,7 +157,7 @@ ssh-copy-id -i slave1
    scp /etc/profile slave1:/etc
    scp /etc/profile slave2:/etc
    ```
-   
+
 7. 复制 `jdk` 到另外两台机器上((请**逐条在命令行中运行**)
 
    ```shell
@@ -214,7 +216,7 @@ ssh-copy-id -i slave1
       vim slaves
       ```
 
-      删除里面的 `localhost`，添加以下内容
+      先删除里面的 `localhost`，然后添加以下内容
 
       ```
       slave1
@@ -245,7 +247,7 @@ ssh-copy-id -i slave1
       vim core-site.xml
       ```
 
-      添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+      添加以下内容：(一定要在 `<configuration> </configuration>` 之间添加)
 
       ```xml
       <property>
@@ -269,7 +271,7 @@ ssh-copy-id -i slave1
       vim hdfs-site.xml
       ```
 
-      添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+      添加以下内容：(一定要在 `<configuration> </configuration>` 之间添加)
 
       ```xml
       <property>
@@ -296,7 +298,7 @@ ssh-copy-id -i slave1
          vim mapred-site.xml
          ```
 
-         添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+         添加以下内容：(一定要在 `<configuration> </configuration>` 之间添加)
 
          ```xml
          <property>
@@ -313,7 +315,7 @@ ssh-copy-id -i slave1
        vim yarn-site.xml
        ```
 
-       添加以下内容：(一定要在 <configuration> </configuration> 之间添加)
+       添加以下内容：(一定要在 `<configuration> </configuration>` 之间添加)
 
        ```xml
        <property>
@@ -354,7 +356,7 @@ ssh-copy-id -i slave1
      ./start-all.sh
      ```
 
-9. 使用 `jps` 命令查看进程
+9. 使用 `jps` 命令查看进程启动情况
 
    ```shell
    jps
@@ -378,6 +380,30 @@ ssh-copy-id -i slave1
    ```
 
    则安装成功，否则安装失败，请检查上述步骤或者配置文件是否出错
+
+10. `hadoop` 配置的疑难解答
+
+    - `namenode` 没有启动成功：
+
+      查看`namenode`的日志。根据实际情况随机应变。
+
+      大部分情况尝试删除 `hadoop`的 `tmp` 目录，解决`namenode` 启动故障。
+
+    - 从节点的 `NodeManage`r 没有启动
+
+      尝试将 `hadoop` 的配置文件拷出，重新解压安装 `hadoop` 重新初始化。
+
+    **注意 `hadoop` 拷贝到其他从节点在初始化 `namenode` 之前。**
+
+11. 安装成功后可以打开浏览器，输入网址 `master` 的 `IP` + `:50070`(注意是英文的 `:`)
+
+     example
+
+     ```
+     192.168.100.144:50070
+     ```
+
+     ![image-20201126122310172](image/image-20201126122310172.png)
 
 #### 8、MySQL
 
@@ -447,7 +473,7 @@ ssh-copy-id -i slave1
 
 11. 退出 `MySQL`
 
-    ```
+    ```sql
     exit;
     ```
 
@@ -459,299 +485,448 @@ ssh-copy-id -i slave1
 
 #### 9、hive 配置文件
 
-1. `hive-env.sh`（`hive-env.sh.template` -> `hive-env.sh`）
+1. 解压 `hive` 安装包
 
-   ```sh
-   HADOOP_HOME=/opt/hadoop
-   JAVA_HOME=/opt/jdk
-   HIVE_HOME=/opt/hive
+   ```shell
+   tar -zxvf apache-hive-2.2.0-bin.tar.gz
    ```
 
-2. `hive-site.xml`（从 `hive-default.xml.template` 拷贝）
+2. 将解压出来的文件夹 ` hadoop-2.7.6.` 移动到 `/opt` 目录下，并修改文件夹名称为 `hive`
 
-   ```
-   " vim 配置方便查找（选择配置）
-   set ignorecase " 自动跳到第一个匹配的结果
-   set incsearch  " 搜索时忽略大小写
+   ```shell
+   mv apache-hive-2.2.0-bin /opt/hive
    ```
 
-   ```xml
-   <!-- vim使用`/`加关键字搜索，n切换到下一个搜索项，N切换到上一个搜索项 -->
-   <property>
-      <name>javax.jdo.option.ConnectionURL </name> 
-      <value>jdbc:mysql://主机ip(不要使用hosts):3306/hive?useSSL=false</value> 
-   </property>
-   
-   <property> 
-      <name>javax.jdo.option.ConnectionDriverName </name> 
-      <value>com.mysql.jdbc.Driver </value> 
-   </property> 
-   
-   <property>
-      <name>javax.jdo.option.ConnectionUserName</name>
-      <value>root</value>
-   </property> 
-   
-   <property> 
-      <name>javax.jdo.option.ConnectionPassword </name> 
-      <value>123456</value> 
-   </property>
-   
-   <property>
-      <name>hive.querylog.location</name>
-   <value>/opt/hive/tmp</value>
-   </property>
-   
-   <property>
-      <name>hive.exec.local.scratchdir</name>
-   <value>/opt/hive/tmp</value>
-   </property>
-   
-   <property>
-       <name>hive.downloaded.resources.dir</name>
-       <value>/opt/hive/tmp</value>
-   </property>
+3. 配置 `hive` 的环境变量
+
+   命令：
+
+   ```shell
+   vim /etc/profile
    ```
 
-```shell
-# 提供 mysql-connector jar包
-cp /root/mysql-connector-java-5.1.17-bin.jar /opt/hive/lib/
+   在 `hadoop` 环境变量后添加以下内容
 
-# 替换掉 hadoop 的 jline 的版本 (高版本的似乎不自带 jline, 目前只知道 hadoop1.6 需要先删除 jline-0.9.94.jar)
-rm -rf /opt/hadoop/share/hadoop/yarn/lib/jline-0.9.94.jar
-cp /opt/hive/lib/jline-2.12.jar /opt/hadoop/share/hadoop/yarn/lib/
-```
-
-**拷贝配置文件到所有机器上**
-
-```shell
-scp -r /opt/hive slave1:/opt
-scp -r /opt/hive slave2:/opt
-```
-
-**初始化元数据：**
-
-```shell
-schematool -dbType mysql -initSchema
-```
-
-**启动 hive，查看是否运行正常**
-
-```sql
-show databases;
-set hive.cli.print.current.db=true;
-exit;
-```
-
-**hadoop 退出 safe mode**
-
-```bash
-hadoop dfsadmin -safemode leave
-```
-
-**hdfs-site.xml的一些配置**
-
-```
-设置dfs权限打开 				truedfs.permissions
-设置HDFS数据块的备份数		  dfs.replication 
-设置数据块写入的最多重试次数 	   dfs.client.block.write.retries
-设置dfs最大并发对象数          dfs.max.objects
-设置DateNode启动的服务线程数   dfs.datanode.handler.count
-```
-
-**hdfs dfs的一些指令，其实跟 bash 的指令差不多：**
-
-```shell
--ls
--mkdir [-p]
--touchz  (跟bash的touch是一样的)
--rmr
--appendToFile File1 File2   (追加File1到File2尾部)
--chmod 644 File1
--cat
--put
-
-# 上传命令：hdfs dfs -put 本地文件路径 hdfs的路径
-hdfs dfs -put /usr/local/testdata/anhui.txt /data/
-
-# 下载命令：上传命令：hdfs dfs -get  hdfs的路径 本地文件路径
-hdfs dfs -get /data/anhui.txt /usr/local/
-```
-
-<p style="color:grey">HDFS 传输问题优先考虑防火墙的问题，优先先尝试关闭防火墙（但实际比赛环境好像没有防火墙）</p>
-
-HDFS 报错：  
-`appendToFile: Failed to APPEND_FILE /data/file/data1.csv for DFSClient_NONMAPREDUCE_-1657827142_1 on 192.168.1.100 because lease recovery is in progress. Try again later.`
-在 `hdfs-site.xml` 中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
-
-#### 10、zookeeper
-
-**配置环境变量**
-
-```shell
-ZOOKEEPER_HOME=/opt/zookeeper
-export PATH=$ZOOKEEPER_HOME/bin:$PATH
-```
-
-**修改配置文件**
-
-`zoo.cfg`（从 `zoo_sample.cfg` 复制）
-
-```cfg
-dataDir=/opt/zookeeper/data
-server.0=master:2888:3888
-server.1=slave1:2888:3888
-server.2=slave2:2888:3888
-```
-
-**同步到其它节点**
-
-```shell
-scp -r /opt/zookeeper slave1:/opt
-scp -r /opt/zookeeper slave2:/opt
-```
-
-**创建 `/opt/zookeepe/data` 目录(每台机器都需要配置)**
-
-```shell
-mkdir /opt/zookeeper/data
-
-# 在 data 目录下创建 myid 文件
-vim myid
-# 分别加上0, 1, 2
-# master -> 0
-# slave1  -> 1
-# slave2  -> 2
-```
-
-**启动 zookeeper**
-
-```shell
-# 三台都需要执行
-zkServer.sh start
-
-# 查看状态
-zkServer.sh status
-
-# 当有一个 leader 的时候启动成功
-
-# 连接 zookeeper
-zkCli.sh
-
-# zk shell 操作
-ls /                  查找根目录
-create /test abc      创建节点并赋值
-get /test             获取指定节点的值
-set /test cb          设置已存在节点的值
-rmr /test             递归删除节点
-delete /test/test01   删除不存在子节点的节点
-```
-
-#### 11、hbase 配置文件
-
-1. hbase-env.sh
-
-   ```sh
-   # 1、改JAVA_HOME
-   
-   # 2.1、未安装 zookeeper
-   	export HBASE_MANAGES_ZK=true
-   # 2.2、安装 zookeeper
-   	export HBASE_MANAGES_ZK=false
-   # 这个关系到 HMaster 的启动
+   ```shell
+   export HIVE_HOME=/opt/hive
+   export PATH=$HIVE_HOME/bin:$PATH
    ```
 
-2. hbase-site.xml
+   使环境变量生效
 
-   ```xml
-   <property> 
-   	<name>hbase.rootdir</name>
-       <value>hdfs://matser/hbase</value>
-   </property>
-   
-   <property> 
-       <name>hbase.cluster.distributed</name>
-       <value>true</value> 
-   </property> 
-   
-   <property> 
-       <name>hbase.zookeeper.quorum</name>
-       <value>master,slave1,slave2</value>
-   </property>
-   
-   # 装了 zookeeper 则不需要此配置
-   <property>
-      <name>hbase.zookeeper.property.dataDir</name> 
-      <value>/opt/hbase/zookeeper</value>
-   </property>
+   ```shell
+   source /etc/profile
    ```
 
-3. regionservers
+4. 修改 `hive` 的配置文件
+
+   1. 进入 `hive` 配置文件目录
+
+      ```shell
+      cd /opt/hive/conf
+      ```
+
+   2. 修改 `hive-env.sh`
+
+      - 从模板中拷贝`hive-env.sh`
+
+        ```shell
+        cp hive-env.sh.template hive-env.sh
+        ```
+
+      - 编辑 `hive-env.sh`
+
+        ```shell
+        vim hive-env.sh
+        ```
+
+        添加以下内容
+
+        ```shell
+        HADOOP_HOME=/opt/hadoop
+        JAVA_HOME=/opt/jdk
+        HIVE_HOME=/opt/hive
+        ```
+
+        ![image-20201126115511637](image/image-20201126115511637.png)
+
+   3. 修改 `hive-site.xml`
+
+      - 从模板中拷贝`hive-site.xml`(注意文件名称不同)
+
+        ```shell
+        cp hive-default.xml.template hive-site.xml
+        ```
+
+      - 配置 `vim` (可选)
+
+        为了方便查找需要修改的内容可以进行一些 `vim` 的配置
+
+        命令：
+
+        ```shell
+        vim ~/.vimrc
+        ```
+
+        添加以下内容
+
+        ```shell
+        set ignorecase " 自动跳到第一个匹配的结果
+        set incsearch  " 搜索时忽略大小写
+        ```
+
+      - 修改  `hive-site.xml` 内容
+
+        命令：
+
+        ```shell
+        vim hive-site.xml
+        ```
+
+        按 `/` 搜索 以下 `<name></name>` 内的内容，修改对应 `<value></value>` 内的内容
+
+        修改一条后按 `Esc` **退出编辑模式**进行下一次搜索！！！
+
+        ```xml
+        <property>
+           <name>javax.jdo.option.ConnectionURL</name> 
+           <value>jdbc:mysql://虚拟机ip(不要使用hosts):3306/hive?useSSL=false</value> 
+        </property>
+        
+        <property> 
+           <name>javax.jdo.option.ConnectionDriverName </name> 
+           <value>com.mysql.jdbc.Driver </value> 
+        </property> 
+        
+        <property>
+           <name>javax.jdo.option.ConnectionUserName</name>
+           <value>root</value>
+        </property> 
+        
+        <property> 
+           <name>javax.jdo.option.ConnectionPassword </name> 
+           <value>123456</value> 
+        </property>
+        
+        <property>
+           <name>hive.querylog.location</name>
+        <value>/opt/hive/tmp</value>
+        </property>
+        
+        <property>
+           <name>hive.exec.local.scratchdir</name>
+        <value>/opt/hive/tmp</value>
+        </property>
+        
+        <property>
+            <name>hive.downloaded.resources.dir</name>
+            <value>/opt/hive/tmp</value>
+        </property>
+        ```
+
+        example:
+
+        ![image-20201126120542284](image/image-20201126120542284.png)
+
+5. 将 `MySQL` 驱动 `jar` 包拷贝到 `hive `(这里使用的是 `5.1.17` 版本)
+
+   ```shell
+   cp /root/mysql-connector-java-5.1.17-bin.jar /opt/hive/lib/
+   ```
+
+6. 替换掉 `hadoop` 的 `jline` 的版本，使用 `hive` 的 `2,12` 版本
+
+   ```shell
+   cp /opt/hive/lib/jline-2.12.jar /opt/hadoop/share/hadoop/yarn/lib/
+   ```
+
+   **注意：** 如果安装的是 `hadoop1.6` 版本，则需要先删除自带的 `0.9.94` 版本的 `jline`
+
+   ```shell
+   rm -rf /opt/hadoop/share/hadoop/yarn/lib/jline-0.9.94.jar
+   ```
+
+7. 拷贝配置文件到另外两台虚拟机
+
+   ```shell
+   scp -r /opt/hive slave1:/opt
+   scp -r /opt/hive slave2:/opt
+   ```
+
+8. 在 `master` 上初始化元数据
+
+   ```shell
+   schematool -dbType mysql -initSchema
+   ```
+
+9. 启动 `hive`
 
    ```
+   hive
+   ```
+
+   若出现以下内容 `hive` 启动成功，否则安装失败，请检查以上步骤是否出错
+
+   ```hive
+   hive>
+   ```
+
+10. `hive` 的基本操作
+
+    查看数据库
+
+    ```sql
+    show databases;
+    ```
+
+    显示使用的数据库名称
+
+    ```sql
+    set hive.cli.print.current.db=true;
+    ```
+
+    退出
+
+    ```sql
+    exit;
+    ```
+
+11. `hadoop` 退出 `safe mode`(可以不做这一步)
+
+    ```shell
+    hadoop dfsadmin -safemode leave
+    ```
+
+12. `hdfs-site.xml` 的一些配置详情(了解)
+
+    ```shell
+    truedfs.permissions					设置dfs权限打开
+    dfs.replication						设置HDFS数据块的备份数
+    dfs.client.block.write.retries		设置数据块写入的最多重试次数
+    dfs.max.objects						设置dfs最大并发对象数
+    dfs.datanode.handler.count			设置DateNode启动的服务线程数
+    ```
+
+13. `hdfs dfs` 的一些指令(实跟 bash 的指令差不多，掌握)
+
+    ```shell
+    hdfs dfs -ls							(显示 hdfs 指定路径下的文件)
+    hdfs dfs -mkdir [-p]					(在 hdfs 上创建文件夹)
+    hdfs dfs -touchz  						(在 hdfs 上创建文件，与 bash 的 touch 相同)
+    hdfs dfs -rm -r							(删除 hdfs 上的文件)
+    hdfs dfs -appendToFile File1 File2   	(追加 File1 到 File2 尾部)
+    hdfs dfs -chmod 644 File1				(修改 hdfs 上指定文件或文件夹的权限)
+    hdfs dfs -cat							(显示 hdfs 上指定文件的内容)
+    hdfs dfs -put							(上传文件到 hdfs 上)
+    
+    # 上传命令：hdfs dfs -put 本地文件路径 hdfs路径
+    hdfs dfs -put /usr/local/testdata/anhui.txt /data/
+    
+    # 下载命令：上传命令：hdfs dfs -get  hdfs路径 本地文件路径
+    hdfs dfs -get /data/anhui.txt /usr/local/
+    ```
+
+14. `hdfs` 一些问题解决
+
+    - 第一步检查虚拟机防火墙是否关闭
+
+      HDFS 传输问题优先考虑防火墙的问题，优先先尝试关闭防火墙（但实际比赛环境好像没有防火墙）
+
+    - 报错 `appendToFile: Failed to APPEND_FILE /data/file/data1.csv for DFSClient_NONMAPREDUCE_-1657827142_1 on 192.168.1.100 because lease recovery is in progress. Try again later.`
+
+      在 `hdfs-site.xml` 中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
+
+#### 10、zookeeper(了解，不需要安装)
+
+1. 解压、移动到 `/opt` 下
+
+   同 `hadoop` 略
+
+2. 配置环境变量(配置好记得 `source /etc/profile`)
+
+   ```shell
+   ZOOKEEPER_HOME=/opt/zookeeper
+   export PATH=$ZOOKEEPER_HOME/bin:$PATH
+   ```
+
+2. 修改配置文件(配置文件在 `/opt/zookeeper/conf/` 目录下)
+
+   - `zoo.cfg`（从 `zoo_sample.cfg` 复制）
+
+     ```
+     dataDir=/opt/zookeeper/data
+     server.0=master:2888:3888
+     server.1=slave1:2888:3888
+     server.2=slave2:2888:3888
+     ```
+
+3. 同步到其它节点
+
+   ```shell
+   scp -r /opt/zookeeper slave1:/opt
+   scp -r /opt/zookeeper slave2:/opt
+   ```
+
+4. 创建 `/opt/zookeepe/data` 目录(三机器都需要配置)
+
+   ```
+   mkdir /opt/zookeeper/data
+   ```
+
+   分别在每台虚拟机下操作：
+
+   1. 在 `data` 目录下创建 `myid` 文件
+
+   2. 三台虚拟机分别在 `myid` 文件内填入 `0, 1, 2` (根据 `zoo.cfg` 中一一对应)
+
+      ```shell
+      master 填入 0
+      slave1 填入 1
+      slave2 填入 2
+      ```
+
+5. 启动 `zookeeper` (三台虚拟机都要操作)
+
+   ```shell
+   zkServer.sh start
+   ```
+
+6. `zookeeper` 一些其他的指令
+
+   查看状态
+
+   ```shell
+   zkServer.sh status
+   ```
+
+   当有一个 `leader` 的时候启动成功，连接 `zookeeper`
+
+   ```shell
+   zkCli.sh
+   ```
+
+   `zk shel` 操作
+
+   ```shell
+   ls /                  查找根目录
+   create /test abc      创建节点并赋值
+   get /test             获取指定节点的值
+   set /test cb          设置已存在节点的值
+   rmr /test             递归删除节点
+   delete /test/test01   删除不存在子节点的节点
+   ```
+
+#### 11、`hbase` 配置文件
+
+1. 解压、移动到 `/opt` 下
+
+   同 `hadoop` 略
+
+2. 配置环境变量 (配置好记得 `source /etc/profile`)
+
+   ```shell
+   export HBASE_HOME=/opt/hbase
+   export PATH=$HBASE_HOME/bin:$PATH
+   ```
+
+3. 修改配置文件(配置文件在 `/opt/hbase/conf/` 目录下)
+   1. 修改 `hbase-env.sh`
+
+      添加以下内容
+
+      ```shell
+      export JAVA_HOME=/opt/jdk
+      export HBASE_MANAGES_ZK=true
+      ```
+
+      ![image-20201126130809697](image/image-20201126130809697.png)
+
+   2. 修改 `hbase-site.xml` (在 `<configuration></configuration>` 之间加入以下内容)
+
+      ```xml
+      <property> 
+      	<name>hbase.rootdir</name>
+          <value>hdfs://matser/hbase</value>
+      </property>
+      
+      <property> 
+          <name>hbase.cluster.distributed</name>
+          <value>true</value> 
+      </property> 
+      
+      <property> 
+          <name>hbase.zookeeper.quorum</name>
+          <value>master,slave1,slave2</value>
+      </property>
+      
+      <property>
+         <name>hbase.zookeeper.property.dataDir</name> 
+         <value>/opt/hbase/zookeeper</value>
+      </property>
+      ```
+
+      ![image-20201126130952410](image/image-20201126130952410.png)
+
+4. 修改 `regionservers` 删除 `localhost` 添加以下内容
+
+   ```shell
    slave1
    slave2
    ```
 
-**拷贝配置文件到所有机器上**
+5. 拷贝配置文件到所有机器上
 
-```shell
-scp -r /opt/hbase node1:/opt
-scp -r /opt/hbase node2:/opt
-```
+   ```shell
+   scp -r /opt/hbase slave1:/opt
+   scp -r /opt/hbase slave2:/opt
+   ```
 
-**启动 hbase**
+6. 启动 `hbase`
 
-```shell
-./start-hbase.sh
+   ```shell
+   start-hbase.sh
+   ```
 
-# 进入 hbase sell
-hbase shell
-```
+7. 进入 `hbase sell`
 
-在master、slave2、slave3中的任意一台机器使用`./bin/hbase shell `进入hbase自带的shell环境，然后使用命令`version`等，进行查看hbase信息及建立表等操作
+   ```shell
+   hbase shell
+   ```
 
-**关闭安全模式**
+   在`master`、`slave1`、`slave2 `中的任意一台机器进入 `hbase` 自带的`shell`环境，然后使用命令 `version` 等，进行查看 `hbase` 信息及建立表等操作
 
-```shell
-hadoop dfsadmin -safemode leave
-```
+8. `jps` 查看进程
 
-主节点: 
+   master
 
-1. HMaster
+   ```
+   HMaster
+   HQuorumPeer
+   ```
 
-2. HQuorumPeer
+   slave
 
-子节点: 
-
-1. HRegionServer
-
-2. HQuorumPeer
-
-**hadoop配置的疑难解答**
-
-*namenode 没有启动成功：*
-
-查看 namenode 的日志。根据实际情况随机应变。
-
-大部分情况尝试删除 hadoop 的 tmp 目录，解决 namenode 启动故障。
-
-从节点的 NodeManager 没有启动，尝试将 hadoop 的配置文件拷出，重新解压安装 hadoop 重新初始化。
-
-**注意 hadoop 拷贝到其他从节点在初始化 namenode 之前。**
+   ```
+   HRegionServer
+   HQuorumPeer
+   ```
 
 #### 12、Spark
 
-**配置环境变量**
+1. 解压、移动到 `/opt` 下
 
-```shell
-export SPARK_HOME=/opt/spark
-export PATH=$SPARK_HOME/bin:$PATH
-```
+   同 `hadoop` 略
 
-**修改配置文件**  
-1. **`spark-env.sh`(从 `spark-env.sh.template` 复制)**
+2. 配置环境变量 (配置好记得 `source /etc/profile`)
+
+   ```shell
+   export SPARK_HOME=/opt/spark
+   export PATH=$SPARK_HOME/bin:$PATH
+   ```
+
+3. 修改配置文件(配置文件在 `/opt/spark/conf/` 目录下)
+
+1. `spark-env.sh`(从 `spark-env.sh.template` 复制，添加以下内容)
 
    ```shell
    export SPARK_MASTER_IP=master
@@ -763,197 +938,235 @@ export PATH=$SPARK_HOME/bin:$PATH
    export JAVA_HOME=/opt/jdk
    ```
 
-2. **`slaves`(从 `slaves.template` 复制)**
+2. `slaves`(从 `slaves.template` 复制，添加以下内容，不用删除 `localhosts`)
 
    ```
    slave1
    slave2
    ```
 
-**拷贝配置文件到所有机器上**
+3. 拷贝配置文件到所有机器上
 
-```shell
-scp -r /opt/spark slave1:/opt
-scp -r /opt/spark slave2:/opt
-```
+   ```shell
+   scp -r /opt/spark slave1:/opt
+   scp -r /opt/spark slave2:/opt
+   ```
 
-**启动 Spark**
+4. 启动 `Spark`
 
-```shell
-./sbin/start-all.sh
+   ```shell
+   cd /opt/spark/sbin
+   ./sbin/start-all.sh
+   ```
+   
+8. `jps`查看进程
 
-# 访问 Spark UI
-http://master:8080
-```
+   `master`
 
-**往 yarn 提交任务需要增加两个配置(`/opt/hadoop/etc/hadoop/yarn-site.xml`)**
+   ```
+   Master
+   Worker
+   ```
 
-```xml
-<property>
-    <name>yarn.nodemanager.pmem-check-enabled</name>
-    <value>false</value>
-</property>
+   `slave`
 
-<property>
-    <name>yarn.nodemanager.vmem-check-enabled</name>
-    <value>false</value>
-</property>
-```
+   ```
+   Worker
+   ```
 
-**同步到其他节点，重启 yarn**
+9. 访问 `Spark UI`
 
-```shell
-scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave1:`pwd`
-scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave2:`pwd`
+   同 `hadoop`，`ip` 地址为 `master` 的 `ip` 地址
 
-/opt/hadoop/sbin/stop-yarn.sh
-/opt/hadoop/sbin/start-yarn.sh
-```
+   ```
+   http://192.168.100.144:8080
+   ```
+
+   ![image-20201126133128252](image/image-20201126133128252.png)
+
+10. 往 yarn 提交任务需要增加两个配置(`/opt/hadoop/etc/hadoop/yarn-site.xml`)
+
+   ```xml
+   <property>
+       <name>yarn.nodemanager.pmem-check-enabled</name>
+       <value>false</value>
+   </property>
+   
+   <property>
+       <name>yarn.nodemanager.vmem-check-enabled</name>
+       <value>false</value>
+   </property>
+   ```
+
+   同步到其他节点
+
+   ```shell
+   scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave1:/opt/hadoop/etc/hadoop/
+   scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave2:/opt/hadoop/etc/hadoop/
+   ```
+
+   重启 `yarn`
+
+   ```shell
+   ./opt/hadoop/sbin/stop-yarn.sh
+   ./opt/hadoop/sbin/start-yarn.sh
+   ```
 
 #### 13、Python
 
-**安装编译所需的环境(在`tensorflow_torch.tgz`内)**
+**注意：** 以下 `Python 3` 的安装依赖于 `tensorflow_torch.tgz` 内的文件，请回到最上方点击链接进行下载
 
-```shell
-tar -zxvf tensorflow_torch.tgz
-cd tensorflow_torch/rpm
-rpm -ivh --nodeps --force *.rpm
-```
+1. 安装编译所需的环境
 
-**编译安装**
-
-```shell
-tar -zxvf Python-3.6.3.tgz
-cd Python-3.6.3
-./configure --prefix=/opt/python36
-
-make
-
-# make 结束后进行
-make install
-```
-
-**创建软链接**
-
-```shell
-ln -s /opt/python36/bin/python3 /usr/bin/python3
-ln -s /opt/python36/bin/pip3 /usr/bin/pip3
-```
-
-**升级 pip**
-
-```shell
-cd /root/tensorflow_torch
-pip3 install pip-20.2.3-py2.py3-none-any.whl
-```
-
-**安装 Tensorflow**
-
-```shell
-# numpy-1.17.2-cp36-cp36m-manylinux1_x86_64.whl
-# protobuf-3.9.2-cp36-cp36m-manylinux1_x86_64.whl
-# requirements.txt
-# six-1.12.0-py2.py3-none-any.whl
-# tensorflow-1.1.0rc1-cp36-cp36m-manylinux1_x86_64.whl
-# Werkzeug-0.16.0-py2.py3-none-any.whl
-# wheel-0.33.6-py2.py3-none-any.whl
-cd /root/tensorflow_torch/tensorflow
-pip3 install *.whl
-```
-
-**Tensorflow 测试代码**
-
-```python
-import tensorflow as tf
-sess = tf.Session()
-hello = tf.constant('Hello,world!')
-print(sess.run(hello))
-```
-
-**安装 PyTorch**
-
-```shell
-cd /root/tensorflow_torch/pytorch
-# 安装 future(要需要先安装，不然后面会报错)
-tar zxvf future-0.18.2.tar.gz
-cd future-0.18.2
-python3 setup.py install
-
-# 安装其他
-# Pillow-7.2.0-cp36-cp36m-manylinux1_x86_64.whl
-# torch-1.6.0+cpu-cp36-cp36m-linux_x86_64.whl
-# torchvision-0.7.0+cpu-cp36-cp36m-linux_x86_64.whl
-cd ..
-pip3 install *.whl
-```
-
-**PyTorch 测试代码**
-
-```python
-import torch
-print(torch.__version__)
-print(torch.tensor([1, 2]))
-```
-
-**排错**
-
-```shell
-python3.6: error while loading shared libraries: libpython3.6m.so.1.0:cannot open shared object file: No such file or directory
-
-# 使用命令ldd /usr/local/Python-3.6/bin/python3 检查其动态链接
-```
-
-```shell
-# 拷贝文件到lib库
-cd /root/Python-3.6.5
-cp libpython3.6m.so.1.0 /usr/local/lib64/
-cp libpython3.6m.so.1.0 /usr/lib/
-cp libpython3.6m.so.1.0 /usr/lib64/
-```
-
-**有网络情况下的安装**
-
-```
-yum install python3
-pip3 install --upgrade pip
-pip3 install tensorflow
-pip3 install torch
-```
-
-**修改 pip 源**
-
-pip 默认源下载很慢所以建议修改成国内镜像源
-
-1. 手动修改
-
-   - 在 `~/`目录下新建 `.pip`文件夹: 
-
-   ```skell
-   mkdir ~/.pip
-   ```
-
-   - 在 `~/.pip`文件夹下新建 `pip.conf`写入以下内容：`vim ~/.pip/pip.conf`
-
-   ```
-   [global]
-   index-url = http://pypi.douban.com/simple/
-   [install]
-   trusted-host = pypi.douban.com
-   ```
-
-2. 使用 `pqi` 修改
+   逐条在命令行执行
 
    ```shell
-   pip3 install pqi
-   
-   pqi ls
-   pypi 	 https://pypi.python.org/simple/
-   tuna 	 https://pypi.tuna.tsinghua.edu.cn/simple
-   douban 	 http://pypi.douban.com/simple/
-   aliyun 	 https://mirrors.aliyun.com/pypi/simple/
-   ustc 	 https://mirrors.ustc.edu.cn/pypi/web/simple
-   
-   pqi use <name> # <name> 为以上显示源的名称，建议使用 ustc 或 douban
+   tar -zxvf tensorflow_torch.tgz
+   cd tensorflow_torch/rpm
+   rpm -ivh --nodeps --force *.rpm
+   ```
+
+2. 编译 `Python` ，安装
+
+   解压
+
+   ```shell
+   tar -zxvf Python-3.6.3.tgz
+   ```
+
+   进入 `Python-3.6.3` 文件夹
+
+   ```shell
+   cd Python-3.6.3
+   ```
+
+   编译安装(逐条在命令行执行)
+
+   ```shell
+   ./configure --prefix=/opt/python36
+   make
+   make install
+   ```
+
+3. 创建软链接
+
+   ```
+   ln -s /opt/python36/bin/python3 /usr/bin/python3
+   ln -s /opt/python36/bin/pip3 /usr/bin/pip3
+   ```
+
+4. 升级 pip
+
+   ```shell
+   cd /root/tensorflow_torch
+   pip3 install pip-20.2.3-py2.py3-none-any.whl
    ```
 
    
+
+5. 安装 `Tensorflow`(逐条执行最后两行)
+
+   ```shell
+   # numpy-1.17.2-cp36-cp36m-manylinux1_x86_64.whl
+   # protobuf-3.9.2-cp36-cp36m-manylinux1_x86_64.whl
+   # requirements.txt
+   # six-1.12.0-py2.py3-none-any.whl
+   # tensorflow-1.1.0rc1-cp36-cp36m-manylinux1_x86_64.whl
+   # Werkzeug-0.16.0-py2.py3-none-any.whl
+   # wheel-0.33.6-py2.py3-none-any.whl
+   cd /root/tensorflow_torch/tensorflow
+   pip3 install *.whl
+   ```
+
+   `Tensorflow` 测试代码(`Python3` 环境下运行)
+
+   ```python
+   import tensorflow as tf
+   sess = tf.Session()
+   hello = tf.constant('Hello,world!')
+   print(sess.run(hello))
+   ```
+
+6. 安装 `PyTorch`
+
+   ```shell
+   cd /root/tensorflow_torch/pytorch
+   # 安装 future(要需要先安装，不然后面会报错)
+   tar zxvf future-0.18.2.tar.gz
+   cd future-0.18.2
+   python3 setup.py install
+   
+   # 安装其他
+   # Pillow-7.2.0-cp36-cp36m-manylinux1_x86_64.whl
+   # torch-1.6.0+cpu-cp36-cp36m-linux_x86_64.whl
+   # torchvision-0.7.0+cpu-cp36-cp36m-linux_x86_64.whl
+   cd ..
+   pip3 install *.whl
+   ```
+
+   `PyTorch` 测试代码
+
+   ```python
+   import torch
+   print(torch.__version__)
+   print(torch.tensor([1, 2]))
+   ```
+
+7. 排错
+
+   - `python3.6: error while loading shared libraries: libpython3.6m.so.1.0:cannot open shared object file: No such file or directory`
+
+     使用命令 `ldd /usr/local/Python-3.6/bin/python3` 检查其动态链接
+
+     拷贝文件到 `lib` 库
+
+     ```shell
+     cd /root/Python-3.6.5
+     cp libpython3.6m.so.1.0 /usr/local/lib64/
+     cp libpython3.6m.so.1.0 /usr/lib/
+     cp libpython3.6m.so.1.0 /usr/lib64/
+     ```
+
+8. 有网络情况下的安装(执行完第二条命令后，请看第 9 步)
+
+   ```shell
+   yum install python3
+   pip3 install --upgrade pip
+   pip3 install tensorflow
+   pip3 install torch
+   ```
+
+9. 修改 pip 源
+
+   `pip` 默认源下载很慢所以建议修改成国内镜像源(**以下方法任选其一**)
+
+   1. 手动修改
+
+      - 在 `~/`目录下新建 `.pip`文件夹: 
+
+        ```shell
+        mkdir ~/.pip
+        ```
+
+      - 在 `~/.pip`文件夹下新建 `pip.conf`写入以下内容：`vim ~/.pip/pip.conf`
+
+        ```conf
+        [global]
+        index-url = http://pypi.douban.com/simple/
+        [install]
+        trusted-host = pypi.douban.com
+        ```
+
+   2. 使用 `pqi` 修改
+
+      ```shell
+      pip3 install pqi
+      pqi ls
+      pqi use <name> # <name> 为以上显示源的名称，建议使用 ustc 或 douban
+      ```
+
+      ![image-20201126134417164](image/image-20201126134417164.png)
+
+      ![image-20201126134440165](image/image-20201126134440165.png)
+
+      ![image-20201126134458391](image/image-20201126134458391.png)
