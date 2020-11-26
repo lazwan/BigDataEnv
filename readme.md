@@ -49,7 +49,7 @@ vim /etc/hosts
 **请注意注意以下几点：**
 
 - 主机名中**一定一定一定**不能有下划线、连接符！！！
-- 请不要复制以下内容直接用，需要讲`master_ip`改成对应主机的 IP 地址(具体请看最后的示例)
+- 请不要复制以下内容直接用，需要将`master_ip`改成对应主机的 IP 地址(具体请看最后的示例)
 
 - 比赛时根据官方要求统一使用 `azy01slave1`, `azy01sla` 类的名字
 
@@ -173,7 +173,7 @@ ssh-copy-id -i slave1
    tar -zxvf hadoop-2.7.6.tar.gz
    ```
 
-2. 将解压出来的文件夹 ` hadoop-2.7.6.` 移动到 `/opt` 目录下，并修改文件夹名称为 `jdk`
+2. 将解压出来的文件夹 ` hadoop-2.7.6.` 移动到 `/opt` 目录下，并修改文件夹名称为 `hadoop`
 
    ```shell
    mv hadoop-2.7.6 /opt/hadoop
@@ -239,7 +239,7 @@ ssh-copy-id -i slave1
 
       ![image-20201126000041086](image/image-20201126000041086.png)
 
-   4. 需改 `core-site.xml`
+   4. 修改 `core-site.xml`
 
       命令：
 
@@ -285,10 +285,10 @@ ssh-copy-id -i slave1
       - 从 `mapred-site.xml.template`复制出 `mapred-site.xml`
 
         命令：
-
-       ```shell
-       cp mapred-site.xml.template mapred-site.xml
-       ```
+  
+        ```shell
+        cp mapred-site.xml.template mapred-site.xml
+        ```
 
        - 用 `vim ` 编辑
 
@@ -926,39 +926,41 @@ ssh-copy-id -i slave1
 
 3. 修改配置文件(配置文件在 `/opt/spark/conf/` 目录下)
 
-1. `spark-env.sh`(从 `spark-env.sh.template` 复制，添加以下内容)
+4. `spark-env.sh`(从 `spark-env.sh.template` 复制，添加以下内容)
+
+   **注意：`SPARK_WORKER_CORES` 和 `SPARK_WORKER_MEMORY` 请根据虚拟机情况设置**
 
    ```shell
    export SPARK_MASTER_IP=master
    export SPARK_MASTER_PORT=7077
-   export SPARK_WORKER_CORES=1  // 根据虚拟机情况设置
+   export SPARK_WORKER_CORES=1
    export SPARK_WORKER_INSTANCES=1
-   export SPARK_WORKER_MEMORY=1g // 根据虚拟机情况设置
+   export SPARK_WORKER_MEMORY=1g
    export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
    export JAVA_HOME=/opt/jdk
    ```
 
-2. `slaves`(从 `slaves.template` 复制，添加以下内容，不用删除 `localhosts`)
+5. `slaves`(从 `slaves.template` 复制，添加以下内容，不用删除 `localhosts`)
 
    ```
    slave1
    slave2
    ```
 
-3. 拷贝配置文件到所有机器上
+6. 拷贝配置文件到所有机器上
 
    ```shell
    scp -r /opt/spark slave1:/opt
    scp -r /opt/spark slave2:/opt
    ```
 
-4. 启动 `Spark`
+7. 启动 `Spark`
 
    ```shell
    cd /opt/spark/sbin
-   ./sbin/start-all.sh
+   ./start-all.sh
    ```
-   
+
 8. `jps`查看进程
 
    `master`
