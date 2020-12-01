@@ -285,7 +285,7 @@ ssh-copy-id -i slave1
       - 从 `mapred-site.xml.template`复制出 `mapred-site.xml`
 
         命令：
-  
+      
         ```shell
         cp mapred-site.xml.template mapred-site.xml
         ```
@@ -846,7 +846,7 @@ ssh-copy-id -i slave1
       ```xml
       <property> 
       	<name>hbase.rootdir</name>
-          <value>hdfs://matser/hbase</value>
+          <value>hdfs://matser:9000/hbase</value>
       </property>
       
       <property> 
