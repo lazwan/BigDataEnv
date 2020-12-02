@@ -636,7 +636,7 @@ ssh-copy-id -i slave1
    cp /root/mysql-connector-java-5.1.17-bin.jar /opt/hive/lib/
    ```
 
-6. 替换掉 `hadoop` 的 `jline` 的版本，使用 `hive` 的 `2,12` 版本
+6. 替换掉 `hadoop` 的 `jline` 的版本，使用 `hive` 的 `2.12` 版本
 
    ```shell
    cp /opt/hive/lib/jline-2.12.jar /opt/hadoop/share/hadoop/yarn/lib/
