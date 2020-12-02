@@ -456,6 +456,8 @@ ssh-copy-id -i slave1
     ```sql
     use mysql;
     update user set host='%' where user = 'root';
+    -- 注意上面一行执行完之后必定会报错，如 ERROR 1062 (23000): Duplicate entry '%-root' for key 'PRIMARY'
+    -- 直接无视执行下一句
     flush privileges;
     ```
 
@@ -590,12 +592,12 @@ ssh-copy-id -i slave1
         ```xml
         <property>
            <name>javax.jdo.option.ConnectionURL</name> 
-           <value>jdbc:mysql://虚拟机ip(不要使用hosts):3306/hive?useSSL=false</value> 
+           <value>jdbc:mysql://master:3306/hive?useSSL=false</value> 
         </property>
         
         <property> 
            <name>javax.jdo.option.ConnectionDriverName </name> 
-           <value>com.mysql.jdbc.Driver </value> 
+           <value>com.mysql.jdbc.Driver</value> 
         </property> 
         
         <property>
