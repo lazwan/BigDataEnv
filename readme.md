@@ -165,7 +165,7 @@ ssh-copy-id -i slave1
    scp -r /opt/jdk slave2:/opt
    ```
 
-#### 7、`hadoop` 配置
+#### 7、安装 `hadoop`
 
 1. 解压 `hadoop` 安装包
 
@@ -405,7 +405,7 @@ ssh-copy-id -i slave1
 
      ![image-20201126122310172](image/image-20201126122310172.png)
 
-#### 8、MySQL
+#### 8、安装 `MySQL`
 
 1. 因为 `CentOS 7` 默认安装了 `mariadb-libs` 会导致安装不上 `MySQL` 所以先卸载冲突源
 
@@ -485,7 +485,7 @@ ssh-copy-id -i slave1
 
 - `mysql` 可能会出现启动不完全的情况。`ps -aux | ps -ef` 检查所有 `mysql` 服务的进程号，`kill -9` 杀死 `mysql` 的所有进程重新启动。
 
-#### 9、hive 配置文件
+#### 9、安装 `hive`
 
 1. 解压 `hive` 安装包
 
@@ -738,7 +738,7 @@ ssh-copy-id -i slave1
 
       在 `hdfs-site.xml` 中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
 
-#### 10、zookeeper(了解，不需要安装)
+#### 10、安装 `zookeeper` (了解，不需要安装)
 
 1. 解压、移动到 `/opt` 下
 
@@ -818,7 +818,7 @@ ssh-copy-id -i slave1
    delete /test/test01   删除不存在子节点的节点
    ```
 
-#### 11、`hbase` 配置文件
+#### 11、安装 `hbase`
 
 1. 解压、移动到 `/opt` 下
 
@@ -913,7 +913,7 @@ ssh-copy-id -i slave1
    HQuorumPeer
    ```
 
-#### 12、Spark
+#### 12、安装 `Spark`
 
 1. 解压、移动到 `/opt` 下
 
@@ -1016,7 +1016,7 @@ ssh-copy-id -i slave1
    ./opt/hadoop/sbin/start-yarn.sh
    ```
 
-#### 13、Python
+#### 13、安装 `Python`
 
 **注意：** 以下 `Python 3` 的安装依赖于 `tensorflow_torch.tgz` 内的文件，请回到最上方点击链接进行下载
 
