@@ -642,7 +642,7 @@ ssh-copy-id -i slave1
    cp /opt/hive/lib/jline-2.12.jar /opt/hadoop/share/hadoop/yarn/lib/
    ```
 
-   **注意：** 如果安装的是 `hadoop1.6` 版本，则需要先删除自带的 `0.9.94` 版本的 `jline`
+   **注意：** 如果安装的是 `hadoop2.6` 版本，则需要先删除自带的 `0.9.94` 版本的 `jline`
 
    ```shell
    rm -rf /opt/hadoop/share/hadoop/yarn/lib/jline-0.9.94.jar
