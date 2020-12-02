@@ -456,6 +456,8 @@ ssh-copy-id -i slave1
     ```sql
     use mysql;
     update user set host='%' where user = 'root';
+    -- 注意上面一行执行完之后必定会报错，如 ERROR 1062 (23000): Duplicate entry '%-root' for key 'PRIMARY'
+    -- 直接无视执行下一句
     flush privileges;
     ```
 
