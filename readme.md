@@ -592,12 +592,12 @@ ssh-copy-id -i slave1
         ```xml
         <property>
            <name>javax.jdo.option.ConnectionURL</name> 
-           <value>jdbc:mysql://虚拟机ip(不要使用hosts):3306/hive?useSSL=false</value> 
+           <value>jdbc:mysql://master:3306/hive?useSSL=false</value> 
         </property>
         
         <property> 
            <name>javax.jdo.option.ConnectionDriverName </name> 
-           <value>com.mysql.jdbc.Driver </value> 
+           <value>com.mysql.jdbc.Driver</value> 
         </property> 
         
         <property>
