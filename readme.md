@@ -16,7 +16,7 @@
 
 这里我们约定三台虚拟机名称默认为 `master`、`slave1`、`slave2` (比赛中会有不同的要求)
 
-具体安装请看👉[虚拟机克隆、连接Xshell](https://gitee.com/lazywa/BigData/blob/master/虚拟机克隆、连接Xshell.md)
+具体安装请看👉 [虚拟机克隆、连接Xshell](https://gitee.com/lazywa/BigData/blob/master/虚拟机克隆、连接Xshell.md)
 
 #### 3、关闭防火墙(三台虚拟机都要操作)
 
@@ -633,7 +633,7 @@ ssh-copy-id -i slave1
 5. 将 `MySQL` 驱动 `jar` 包拷贝到 `hive `(这里使用的是 `5.1.17` 版本)
 
    ```shell
-   cp /root/mysql-connector-java-5.1.17-bin.jar /opt/hive/lib/
+   cp /root/mysql-connector-java-5.1.17.jar /opt/hive/lib/
    ```
 
 6. 替换掉 `hadoop` 的 `jline` 的版本，使用 `hive` 的 `2,12` 版本
@@ -642,7 +642,7 @@ ssh-copy-id -i slave1
    cp /opt/hive/lib/jline-2.12.jar /opt/hadoop/share/hadoop/yarn/lib/
    ```
 
-   **注意：** 如果安装的是 `hadoop1.6` 版本，则需要先删除自带的 `0.9.94` 版本的 `jline`
+   **注意：** 如果安装的是 `hadoop2.6` 版本，则需要先删除自带的 `0.9.94` 版本的 `jline`
 
    ```shell
    rm -rf /opt/hadoop/share/hadoop/yarn/lib/jline-0.9.94.jar
