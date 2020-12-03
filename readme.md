@@ -738,7 +738,7 @@ ssh-copy-id -i slave1
 
       在 `hdfs-site.xml` 中追加 `name: dfs.client.block.write.replace-datanode-on-failure.policy value=NEVER`
 
-#### 10、安装 `zookeeper` (了解，不需要安装)
+#### ~~10、安装 `zookeeper` (了解，不需要安装)~~
 
 1. 解压、移动到 `/opt` 下
 
@@ -818,7 +818,7 @@ ssh-copy-id -i slave1
    delete /test/test01   删除不存在子节点的节点
    ```
 
-#### 11、安装 `hbase`
+#### ~~11、安装 `hbase` (有点问题暂时不能成功安装)~~
 
 1. 解压、移动到 `/opt` 下
 
