@@ -818,7 +818,7 @@ ssh-copy-id -i slave1
    delete /test/test01   删除不存在子节点的节点
    ```
 
-#### ~~11、安装 `hbase` (有点问题暂时不能成功安装)~~
+#### 11、安装 `hbase`
 
 1. 解压、移动到 `/opt` 下
 
@@ -848,7 +848,7 @@ ssh-copy-id -i slave1
       ```xml
       <property> 
       	<name>hbase.rootdir</name>
-          <value>hdfs://matser:9000/hbase</value>
+          <value>hdfs://master:9000/hbase</value>
       </property>
       
       <property> 
@@ -867,8 +867,6 @@ ssh-copy-id -i slave1
       </property>
       ```
 
-      ![image-20201126130952410](image/image-20201126130952410.png)
-
 4. 修改 `regionservers` 删除 `localhost` 添加以下内容
 
    ```shell
@@ -883,13 +881,19 @@ ssh-copy-id -i slave1
    scp -r /opt/hbase slave2:/opt
    ```
 
-6. 启动 `hbase`
+6. 关闭 `hadoop` 安全模式
+
+   ```shell
+   hadoop dfsadmin -safemode leave
+   ```
+
+7. 启动 `hbase`
 
    ```shell
    start-hbase.sh
    ```
 
-7. 进入 `hbase sell`
+8. 进入 `hbase sell`
 
    ```shell
    hbase shell
@@ -897,7 +901,7 @@ ssh-copy-id -i slave1
 
    在`master`、`slave1`、`slave2 `中的任意一台机器进入 `hbase` 自带的`shell`环境，然后使用命令 `version` 等，进行查看 `hbase` 信息及建立表等操作
 
-8. `jps` 查看进程
+9. `jps` 查看进程
 
    master
 
