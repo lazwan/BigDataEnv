@@ -843,8 +843,17 @@ ssh-copy-id -i slave1
 
       ![image-20201126130809697](image/image-20201126130809697.png)
 
-   2. 修改 `hbase-site.xml` (在 `<configuration></configuration>` 之间加入以下内容)
+      将以下内容注释掉(在每行开头加一个 `#` 即可，如图)
 
+      ```xml
+      export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
+      export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
+      ```
+   
+      ![image-20201207155057412](image/image-20201207155057412.png)
+   
+   2. 修改 `hbase-site.xml` (在 `<configuration></configuration>` 之间加入以下内容)
+   
       ```xml
       <property> 
       	<name>hbase.rootdir</name>
@@ -857,7 +866,7 @@ ssh-copy-id -i slave1
       </property> 
       
       <property> 
-          <name>hbase.zookeeper.quorum</name>
+       <name>hbase.zookeeper.quorum</name>
           <value>master,slave1,slave2</value>
       </property>
       
@@ -866,7 +875,7 @@ ssh-copy-id -i slave1
          <value>/opt/hbase/zookeeper</value>
       </property>
       ```
-
+   
 4. 修改 `regionservers` 删除 `localhost` 添加以下内容
 
    ```shell
