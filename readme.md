@@ -955,7 +955,7 @@ ssh-copy-id -i slave1
    export JAVA_HOME=/opt/jdk
    ```
 
-5. `slaves`(从 `slaves.template` 复制，添加以下内容，不用删除 `localhosts`)
+5. `slaves`(从 `slaves.template` 复制，添加以下内容，不用删除 `localhost`)
 
    ```
    slave1
@@ -1025,8 +1025,8 @@ ssh-copy-id -i slave1
    重启 `yarn`
 
    ```shell
-   ./opt/hadoop/sbin/stop-yarn.sh
-   ./opt/hadoop/sbin/start-yarn.sh
+   /opt/hadoop/sbin/stop-yarn.sh
+   /opt/hadoop/sbin/start-yarn.sh
    ```
 
 #### 13、安装 `Python`
@@ -1129,7 +1129,7 @@ ssh-copy-id -i slave1
    print(torch.tensor([1, 2]))
    ```
 
-7. 排错
+7. 排错 (**没有错误不需要排错**)
 
    - `python3.6: error while loading shared libraries: libpython3.6m.so.1.0:cannot open shared object file: No such file or directory`
 
