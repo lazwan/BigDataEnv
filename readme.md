@@ -1003,31 +1003,31 @@ ssh-copy-id -i slave1
 
 10. 往 yarn 提交任务需要增加两个配置(`/opt/hadoop/etc/hadoop/yarn-site.xml`)
 
-   ```xml
-   <property>
-       <name>yarn.nodemanager.pmem-check-enabled</name>
-       <value>false</value>
-   </property>
-   
-   <property>
-       <name>yarn.nodemanager.vmem-check-enabled</name>
-       <value>false</value>
-   </property>
-   ```
+      ```xml
+    <property>
+        <name>yarn.nodemanager.pmem-check-enabled</name>
+        <value>false</value>
+    </property>
 
-   同步到其他节点
+    <property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+    </property>
+      ```
 
-   ```shell
-   scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave1:/opt/hadoop/etc/hadoop/
-   scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave2:/opt/hadoop/etc/hadoop/
-   ```
+      同步到其他节点
 
-   重启 `yarn`
+      ```shell
+    scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave1:/opt/hadoop/etc/hadoop/
+    scp -r /opt/hadoop/etc/hadoop/yarn-site.xml slave2:/opt/hadoop/etc/hadoop/
+      ```
 
-   ```shell
-   /opt/hadoop/sbin/stop-yarn.sh
-   /opt/hadoop/sbin/start-yarn.sh
-   ```
+      重启 `yarn`
+
+      ```shell
+    /opt/hadoop/sbin/stop-yarn.sh
+    /opt/hadoop/sbin/start-yarn.sh
+      ```
 
 #### 13、安装 `Python`
 
